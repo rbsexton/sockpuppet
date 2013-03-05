@@ -1,0 +1,22 @@
+Implementing Flow control on TI Stellaris MCUs.
+
+The SAPI layer implements basic, interrupt based flowcontrol when used
+with UARTs.  When used with USB and Ethernet, things are done with
+ring buffers, and much of this doesn't apply.
+
+Outgoing Flow Control:
+FIFO Level is set at roughly one half.   The syscall detects that it
+has crossed a FIFO boundary, and returns a different value so that the
+Application can slow down the rate of output.  It also lowers the FIFO
+threshhold so that the UART will wake the system from the WFI when the
+FIFO has drained a bit.  When the IRQ fires, the interrupt handler
+raises the thresh-hold and clears the IRQ so that Forth will fill up
+the FIFO.
+
+Incoming:
+Use the timeout to detect single characters.  Set the FIFO thresshold
+low.  When it fires, raise the level.  If its already high, Forth is
+getting behind, so send an XOFF.  The getchar routine checks for flow
+control, and sends the XON.
+
+
