@@ -21,7 +21,7 @@ TI/Stellaris libraries.
 
 ----------------------
 Not included:  Libraries from TI and/or ST.   Those are covered
-under their own licences and may be obtained directly from the
+under their own licenses and may be obtained directly from the
 vendors.
 
 Not Included: Forth compiler from MPE.  
