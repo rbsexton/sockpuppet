@@ -13,5 +13,17 @@ Support for other languages should be possible.  The assumption is
 that main() or it's equivalent can be substitited as need be.
 
 Currently supported SOCs include Cortex-M3s from TI (Stellaris) and
-the ST Micro STM32L family.  Other devices can be added as need be.
+the ST Micro STM32L family.   Its extensible.
+
+Compilation enviroment is GNU gcc.   I use the summon-arm-toolchain
+script.   The Makefiles are based upon the ones that ship with the
+TI/Stellaris libraries.
+
+----------------------
+Not included:  Libraries from TI and/or ST.   Those are covered
+under their own licences and may be obtained directly from the
+vendors.
+
+Not Included: Forth compiler from MPE.  
+
 
