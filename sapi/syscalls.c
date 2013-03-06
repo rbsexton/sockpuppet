@@ -126,7 +126,7 @@ void __SAPI_StreamCharsAvail(long *frame) {
 		frame[0] = UARTCharsAvail(uart_ports[frame[0]]);
 		return;
 		}
-	
+	}	
 
 // ------- SVC 5: Reserved -------
 // ------- SVC 6: Reserved -------
