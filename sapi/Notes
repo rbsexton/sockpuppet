@@ -1,3 +1,13 @@
+Dynamic/Runtime Linking between Forth and C
+
+The SAPI API defines a system call that returns the address of the 
+dynamic linking list.  Forth or any other language can traverse the
+list to find out the adresses of interest. 
+
+See sapi-dylink.h for structure definitions and declarations, and
+dylink-example.c for a sample data file.
+
+------------------------
 Implementing Flow control on TI Stellaris MCUs.
 
 The SAPI layer implements basic, interrupt based flowcontrol when used
@@ -18,5 +28,4 @@ Use the timeout to detect single characters.  Set the FIFO thresshold
 low.  When it fires, raise the level.  If its already high, Forth is
 getting behind, so send an XOFF.  The getchar routine checks for flow
 control, and sends the XON.
-
 
