@@ -41,6 +41,8 @@ static unsigned long uart_ports[] = {
 	};
 #endif
 
+#define XON 0x11
+
 ///< Watchdog support is in SAPI 0202 and later.
 #if (SAPI_WATCHDOG) 
 #include "wdt.h"
@@ -73,33 +75,70 @@ void __SAPI_GetLinkList(long *frame) {
 /// @param frame[1]/R1 Character to output
 /// @returns Success:  0
 /// @returns Quench:  -1
+
+unsigned int count_sapi_putchar_highwater=0;
+unsigned int count_sapi_putchar_pendsv=0;
+unsigned int count_sapi_putchar_success=0;
+
 void __SAPI_StreamPutChar(long *frame) {
 	// Physical UARTS are 0-9
-	if (frame[0] < 10 ) {
-		frame[0] = 0;
-		#if (PLATFORM_LM3S) 
 
-		// This call will wait until there is room.
+	#if (PLATFORM_LM3S) 
+	// Physical UARTS are 0-9
+	if (frame[0] < 10 ) {
+	    unsigned long tx_level;
+		unsigned long rx_level;
+
+		// There are four cases:
+		// 3: Room before(1) -> Room After(1)
+		// 2: Room before(1) -> High After(0)
+		// 1: High before(0) -> Room After(1) !!!! Unpossible
+		// 0: High before(0) -> High After(0)
+		
+		// This will block if the FIFO is full.
   		UARTCharPut(uart_ports[frame[0]],frame[1]);
 
-		// There should be a check here for a full FIFO.  If its full whack PendSV
-		// so that we WFI until there is room for the next character.
-		if (HWREG(uart_ports[frame[0]] + UART_O_FR) & UART_FR_TXFF) {
-			HWREG(NVIC_INT_CTRL) = NVIC_INT_CTRL_PEND_SV;
-			pendsv_uart = uart_ports[frame[0]];
-			frame[0] = -1; // By definition, if had to PendSV, that means we tell the user.
-			return;
-			}		
+		// The RIS bit gets set when you have room for more.
+		// If the TX bit was set before, there was room
+		// If its still set now, there is still room. 
+        if ( (HWREG(uart_ports[frame[0]] + UART_O_RIS) & UART_RIS_TXRIS) != 0 ) {
+        		count_sapi_putchar_success++;
+                frame[0] = 0;
+                return;
+                }
 
-		// This bit is set to indicate that there is room for more...
-		if (HWREG(uart_ports[frame[0]] + UART_O_RIS) & UART_RIS_TXRIS) {
-			frame[0] = 0;
-			}
-		else { frame[0] = -1; }
+		// If the FIFO is full, or we have triggered highwater, we will adjust the 
+		// FIFO Trigger level and enable the IRQ
+       	UARTFIFOLevelGet(uart_ports[frame[0]],&tx_level,&rx_level);
+ 		                             
+        // If we were below before, and we are above now, its highwater.        
+        if ( (HWREG(uart_ports[frame[0]] + UART_O_RIS) & UART_RIS_TXRIS) == 0 ) {
+        	count_sapi_putchar_highwater++;
+        	UARTFIFOLevelSet(uart_ports[frame[0]],UART_FIFO_TX2_8,rx_level);
+        	}
 
-		#endif
-		return;
+    	// There should be a check here for a full FIFO.  If its full whack PendSV
+        // so that we WFI until there is room for the next character.
+        // We'll return a pause to the app, but set the IRQ level high so that
+        // we don't have to drain too much before letting the App have cycles.
+        // Do this check second so that two calls to LevelSet don't conflict.
+        if (HWREG(uart_ports[frame[0]] + UART_O_FR) & UART_FR_TXFF) {
+                count_sapi_putchar_pendsv++;
+	        	UARTFIFOLevelSet(uart_ports[frame[0]],UART_FIFO_TX7_8,rx_level);
+
+                HWREG(NVIC_INT_CTRL) = NVIC_INT_CTRL_PEND_SV;
+                pendsv_uart = uart_ports[frame[0]];
+                }
+
+        // Enable the IRQ so that the handler can wake us.
+        HWREG(uart_ports[frame[0]] + UART_O_IM) |= UART_IM_TXIM;
+
+		// In either case, we tell the App.
+		frame[0] = -1;
+		
+        return;
 		}
+		#endif
 
 	// For now, assume that > 10 means networking
 
@@ -109,12 +148,41 @@ void __SAPI_StreamPutChar(long *frame) {
 /// SVC 3: StreamGetChar 
 ///
 /// Pull a character out of the stream of choice
+/// This gets called when CharsAvail says there is work to do.
+unsigned int count_sapi_streamgetchar=0;
+unsigned int count_sapi_streamgetchar_xon=0;
+
 void __SAPI_StreamGetChar(long *frame) {
+	count_sapi_streamgetchar++;
+	unsigned long the_char;
+
+	#if (PLATFORM_LM3S) 
 	if (frame[0] < 10 ) {
-		frame[0] = 0;
-		frame[0] = UARTCharGet(uart_ports[frame[0]]);
+		unsigned long tx_level;
+		unsigned long rx_level;
+
+		the_char = UARTCharGet(uart_ports[frame[0]]);
+		
+		// If the UART isn't empty, we're done
+		if ( (HWREG(uart_ports[frame[0]] + UART_O_FR) & UART_FR_RXFE) == 0 ) {
+			frame[0] = the_char;
+			return;
+			}
+			
+		// If we're here, the FIFO is empty now.
+		
+		// Figure out if we need to issue the XON.
+		UARTFIFOLevelGet(uart_ports[frame[0]],&tx_level,&rx_level);
+		if ( rx_level != UART_FIFO_RX1_8 ) { // Send the XON and lower the level
+			UARTFIFOLevelSet(uart_ports[frame[0]],tx_level,UART_FIFO_RX1_8);
+			UARTCharPut(uart_ports[frame[0]],XON);
+			count_sapi_streamgetchar_xon++;
+			}
+
+		frame[0] = the_char;	
 		return;
 		}
+	#endif
 	}
 
 /// SVC 4: StreamCharsAvail 
@@ -123,7 +191,9 @@ void __SAPI_StreamGetChar(long *frame) {
 void __SAPI_StreamCharsAvail(long *frame) {
 	if (frame[0] < 10 ) {
 		frame[0] = 0;
+		#if (PLATFORM_LM3S) 
 		frame[0] = UARTCharsAvail(uart_ports[frame[0]]);
+		#endif
 		return;
 		}
 	}	
@@ -214,11 +284,13 @@ void PendSVHandler () {
 	if ( pendsv_uart != 0 ) {
 		// Spin and WFI until its not full 
 
+		#if (PLATFORM_LM3S) 
    		while(HWREG(pendsv_uart + UART_O_FR) & UART_FR_TXFF) {
    			sapi_count_pendsv++;
 			__asm("wfi");
    			}
 		pendsv_uart = 0;
+		#endif
 		}
 	}
 

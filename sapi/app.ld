@@ -1,20 +1,10 @@
 /******************************************************************************
  *
- * app.ld - Linker configuration file for SAPI client.
- * Target - 64k of flash starting at 192k
- *        - 32k of ram starting at 64k
+ * app.ld - Linker configuration file for SAPI client on a LM3S6965
+ * Target - 128k of flash starting at 128k
+ *        - 32k of ram starting at 32k
  *
  *****************************************************************************/
-
-/* This linker map is hacked:
-* 1: Skip the first 2k to make room for the boot loader.
-* 2: Skip the last 2k to make room for flash pram.
-*
-* There doesn't appear to be a good way to Automagically determine the
-* stack boundaries so I just declare some lengths.  The M3 does
-* a descending stack, so SP gets updated before the write.
-* For doubleword support, AAPCS requires that the stack be 8-byte aligned.
-*/
 
 /* TUNABLES */
 
@@ -28,9 +18,9 @@ __overflow_stack_size = 256;
 
 MEMORY
 {
-    FLASH (rx) : ORIGIN = 192k, LENGTH = 64k
-    SRAM (rwx) : ORIGIN = 0x20000000 + 64k, LENGTH = 31k
-    STACK (rx) : ORIGIN = 0x20000000 + 64k + 31k + 512, LENGTH = 512
+    FLASH (rx) : ORIGIN = 128k, LENGTH = 128k
+    SRAM (rwx) : ORIGIN = 0x20000000 + 32k, LENGTH = 31k
+    STACK (rx) : ORIGIN = 0x20000000 + 32k + 31k + 512, LENGTH = 512
 }
 
 /*

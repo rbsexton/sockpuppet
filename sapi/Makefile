@@ -31,7 +31,7 @@ clean:
 	$(OBJDUMP) -d --source $<  > $@
 %.bin: %.axf
 	$(OBJCOPY) -O binary $<  $*.bin
-sp.axf: crt0.o svc.o syscalls.o sp.o sapi.o
+sp.axf: crt0.o svc.o syscalls.o sp.o sapi.o 
 	@ echo "...linking $@"
 	${LD} -M -T sp.ld --entry ResetISR --gc-sections -o $@ $^ \
 	                $(STELLARISWARE)/driverlib/gcc/libdriver.a > sp.ldout
