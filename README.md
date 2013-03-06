@@ -1,13 +1,16 @@
-The Sockpuppet API is a system call interface for Forth that is Cortex-M3
-Specific.  It uses the SVC instruction to hook into a system call
+The Sockpuppet API is a minimalist system call interface for Forth
+that is Cortex-M3 Specific.   This system call interface includes 
+getchar/putchar and friends, plus a runtime linking mechanism so that Forth
+can look up selected variables and functions in the C layer.
+
+It does this via SVC instruction to hook into a system call
 layer that is written in C.   The calling code can be in any language.
 Files are supplied for use with MPE Forth (http://www.mpeforth.com).
 
-The intent is to abstract away all of the SOC intialization code and
-the console interface.  This allows the platform-specific things to be
-written in C so that Forth can serve as an application development
-platform that isn't encumbered with the finer points of peripheral
-control.
+This moves all SOC initialization into the C layer, and allows
+you to use existing C code for these things, as well as writing
+interrupt handlers in C.   Interrupt handlers can trigger Forth 
+threads in a traditional top half/bottom half arrangement.
 
 Support for other languages should be possible.  The assumption is
 that main() or it's equivalent can be substitited as need be.
