@@ -6,18 +6,32 @@
 /// 
 /// Special Rules:
 /// - The very first item is the size of the record.
+/// 
+
+// This could be packed more tightly, but its now exactly
+// 16 bytes per record, which is nice.  Make sure that doesn't
+// change.
+
 typedef struct {
-        void *p;       ///< Pointer to the object of interest
+	// This union is a bit crazy, but its the simplest way of 
+	// getting the compiler to shut up.
+	union { 
+		void (*fp) (void);
+		int*  ip;
+		unsigned int    ui;
+		unsigned int*  uip;
+		unsigned long* ulp;
+		} p;   ///< Pointer to the object of interest
 	int16_t size;  ///< Size in bytes
 	int16_t count; ///< How many
 	int8_t kind;   ///< Is this a variable or a constant?
-	uint8_t namelen; ///< C string length
-	char  name[19]; ///< C string.
+	int8_t strlen;   ///< Length of the string
+	char  *name; ///< Null-Terminated C string.
 	} runtimelink_t;
 
 
 /// Helper Macro.
 #define FORTHNAME(x) (sizeof(x)-1),x
 
-extern runtimelink_t dynamiclinks[];
+extern const runtimelink_t dynamiclinks[];
 
