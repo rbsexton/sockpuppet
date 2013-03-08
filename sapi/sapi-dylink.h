@@ -12,6 +12,12 @@
 // 16 bytes per record, which is nice.  Make sure that doesn't
 // change.
 
+// Conventions: 
+// Size is the size of the fundamental thing in bytes, 
+// and count is the number of them.
+// char array[64] = 1,64
+// struct { a, b } s; sizeof(s),1
+
 typedef struct {
 	// This union is a bit crazy, but its the simplest way of 
 	// getting the compiler to shut up.
