@@ -19,6 +19,11 @@
 \ Return the recordlength.  Its the first thing.
 : dy-recordlen getsharedvars @ ;
 
+\ Retrieve the string.
+: dy-string ( addr -- caddr n ) 
+  dup dy.name swap dy.namelen  
+;  
+
 \ Heres some assembly code to use as a template.
 \ I experimented a bit, and the simplest thing in the MPE
 \ Forth environment is to lay down the assembly
@@ -77,6 +82,28 @@ END-CODE
     make-const
     ;
 
+\ Given a record address and a string, figure out
+\ if thats the one we're looking for
+: dy-compare ( caddr n addr -- n )  
+  dy-string compare  
+;
+
+\ Find the record in the list to go with a string
+: dy-find ( c-addr n -- addr|0 ) 
+  getsharedvars dy-recordlen + \ Skip over the empty first record
+  >R \ Put it onto the return stack
+  BEGIN
+   R@ dy.val 0<>
+  WHILE 
+   2DUP R@ dy-compare
+   \ If we find it, clean the stack and leave the address on R
+   0= IF 2DROP R> EXIT THEN
+   R> dy-recordlen + >R
+  REPEAT
+  \ If we fall out, there will be a string caddr/n on the stack
+  2DROP R> DROP 
+  0 \ Leave behind a zero to indicate failure
+;
 
 \ Walk the table and make the constants.
 : dy-populate
