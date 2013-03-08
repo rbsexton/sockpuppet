@@ -5,10 +5,6 @@
 \ Secondary support functions 
 \ ************************************************************************
 \ ************************************************************************
-\ A basic fn for printing a null-terminated string.
-\ Surely this is in the base system someplace?
-\ : sprint begin dup c@ 0<> while dup c@ emit 1+ repeat drop ; 
-
 
 \ *********************************************
 \ Accessors - Tightly tied the data structure
@@ -20,18 +16,20 @@
 : dy.namelen #9 + c@ ;
 : dy.name   #12 +  @ ;
 
-\ : dy-getval ( addr -- n ) 
-\  dy.val + @ ;
+\ Return the recordlength.  Its the first thing.
+: dy-recordlen getsharedvars @ ;
 
 \ Heres some assembly code to use as a template.
 \ I experimented a bit, and the simplest thing in the MPE
 \ Forth environment is to lay down the assembly
+((
 CODE rawconstant
 	str tos, [ psp, # -4 ] ! \ register push
     ldr tos, L$1
 	bx lr
 L$1: str tos, [ psp, # -4 ] ! \ 32-bit dummy instruction
 END-CODE
+))
 
 \ Create a constant from scratch by laying down some assembly
 \ A key trick is that we have to lay down a pointer to 
@@ -56,41 +54,39 @@ END-CODE
 \ Dump out an entry as a set of constants
 : dy-print \ c-addr --
      S" $" type
-     dup dy.val .    \ Fetch the value
+     DUP dy.val .    \ Fetch the value
      
-     dup dy.type [CHAR] V = \ check the type 
+     DUP dy.type [CHAR] V = \ check the type 
      
      IF
      	S" VALUE "
      ELSE
      	S" CONSTANT "
      THEN
-     
-     type \ Display the result
-     dy.name count type
-     cr
+     TYPE \ Display the result
+     DUP dy.size . S" x" DUP dy.count .
+     dy-string TYPE
+     CR
    ; 
 
 \ Take a pointer to a dynamic link record, and add a constant to the dictionary
-: dy-create \ c-addr --
-	dup \ c-addr c-addr 
+: dy-create \ addr --
+	DUP \ addr addr 
 	dy.val \ c-addr n 
-	swap dy.name dy.namelen \ n c-addr b
+	SWAP dy-string \ n c-addr b
     make-const
     ;
 
-\ Return the recordlength.  Its the first thing.
-: dy-recordlen getsharedvars @ ;
 
 \ Walk the table and make the constants.
 : dy-populate
   getsharedvars dy-recordlen + \ Skip over the empty first record
-  begin  
+  BEGIN  
      dup dy.val 0<> 
-  while
+  WHILE
      dup dy-create
      dy-recordlen +
-  repeat
-  drop
+  REPEAT
+  2DROP R> DROP 0
   ;   
     
