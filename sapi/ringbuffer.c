@@ -41,12 +41,12 @@ void ringbuffer_addchar(RINGBUF* rb, uint8_t c) {
 	if ( rb->freecount > 1 ) {
 		rb->buf[rb->next_write] = c;
 		(rb->freecount)--;
-		rb->next_write = ++(rb->next_write) & rb->bufmask;
+		rb->next_write = rb->bufmask & (rb->next_write + 1);
 		}
 	else { // It gets complicated.  Steal one
 		rb->buf[rb->next_write] = c;
-		rb->next_write = ++(rb->next_write) & rb->bufmask;
-		rb->next_read = ++(rb->next_read) & rb->bufmask;
+		rb->next_write = rb->bufmask & (rb->next_write + 1);
+		rb->next_read  = rb->bufmask & (rb->next_read + 1);
 		// No change in freecount
 		}
 	}
@@ -60,7 +60,7 @@ uint8_t ringbuffer_getchar(RINGBUF* rb) {
 
 	// Get the char, then advance the pointer
 	c = rb->buf[rb->next_read];
-	rb->next_read = ++(rb->next_read) & rb->bufmask;
+	rb->next_read = rb->bufmask & (rb->next_read + 1);
 	return(c);
 	}
 
