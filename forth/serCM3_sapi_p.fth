@@ -85,9 +85,6 @@ CODE (serkey?)     \ base -- t/f
 \ The call returns 0 or 1.  If 1, subtract 2.
 	mov r0, tos
 	svc # 4		
- 	cmp r0, # 1	
-	it .eq
- 	  sub r0, # 2
 	mov tos, r0
 	next,	
 END-CODE
