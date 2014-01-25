@@ -132,14 +132,6 @@ create Console0	\ -- addr ; OUT managed by upper driver
 : serkey1	#1 (serkey)  ;
 create Console1 ' serkey1 , ' serkey?1 , ' seremit1 , ' sertype1 , ' sercr1 ,	
 
-\ UART2
-: seremit2  #2 (seremit)  ;
-: sertype2	#2 (sertype)  ;
-: sercr2	#2 (sercr)  ;
-: serkey?2	#2 (serkey?)  ;
-: serkey2	#2 (serkey)  ;
-create Console2 ' serkey2 , ' serkey?2 , ' seremit2 , ' sertype2 , ' sercr2 ,	
-
 \ Versions for use with the TCP Port (10)
 : seremit10  #10 (seremit)  ;
 : sertype10	#10 (sertype)  ;
@@ -156,8 +148,8 @@ console-port 0 = [if]
 \ *C   <device>  SetConsole
 [then]
 
-console-port #2 = [if]
-  console2 constant console
+console-port #1 = [if]
+  console1 constant console
 [then]
 
 console-port  #10 = [if]
