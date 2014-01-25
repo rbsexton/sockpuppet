@@ -15,7 +15,7 @@ only forth definitions
 \ *T SAPI polled serial driver
 \ ==============
 \ *P This driver provides polled serial comms for Cortex-M3 CPUs
-\ ** using the internal UARTs via the SAPI. 
+\ ** using the internal UARTs via the SAPI call layer.
 
 
 \ ****************
@@ -48,7 +48,7 @@ CODE (seremitfc)	\ char base --
 \ Put TOS into r0, pull r1 off the stack, and refresh the stack.
 	mov r0, tos
 	ldr r1, [ psp ], # 4	
-	svc # 2
+	svc # SAPI_VEC_PUTCHAR	
 	mov tos, r0
     next,
 END-CODE
@@ -75,7 +75,7 @@ END-CODE
 CODE (sergetchar) \ base -- c
 \ *G Get a character from the port
 	mov r0, tos	
-	svc # 3
+	svc # SAPI_VEC_GETCHAR
 	mov tos, r0
 	next,
 END-CODE
@@ -84,7 +84,7 @@ CODE (serkey?)     \ base -- t/f
 \ *G Return true if the given UART has a character avilable to read.
 \ The call returns 0 or 1.  If 1, subtract 2.
 	mov r0, tos
-	svc # 4		
+	svc # SAPI_VEC_CHARSAVAIL		
 	mov tos, r0
 	next,	
 END-CODE

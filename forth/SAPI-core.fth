@@ -19,12 +19,21 @@
 \ Note that the system call number is embedded into the instruction,
 \ so this is not so easily parameterized.
 
+#0 equ SAPI_VEC_VERSION
+#1 equ SAPI_VEC_PUTCHAR
+#2 equ SAPI_VEC_GETCHAR
+#3 equ SAPI_VEC_CHARSAVAIL
+
+#8 equ SAPI_VEC_VARS
+#9 equ SAPI_VEC_USAGE
+#10 equ SAPI_VEC_GETMS
+
 \ **********************************************************************
 \ SVC 0: Return the version of the API in use.
 \ **********************************************************************
 CODE SAPI-Version  \ -- n 
 	\ Push TOS, and place the result there.	
-	svc # 0 
+	svc # SAPI_VEC_VERSION 
 	str tos, [ psp, # -4 ] !
 	mov tos, r0
 	next,
@@ -34,7 +43,7 @@ END-CODE
 \ SVC 1: Get the address of the shared variable list
 \ **********************************************************************
 CODE GetSharedVars  \ -- n 
-	svc # 1 
+	svc # SAPI_VEC_VARS 
 	str tos, [ psp, # -4 ] !
 	mov tos, r0
 	next,
@@ -44,7 +53,7 @@ END-CODE
 \ SVC 9: Return Millisecond ticker value.
 \ **********************************************************************
 CODE Ticks  \ -- n 
-	svc # 9
+	svc # SAPI_VEC_GETMS
 	str tos, [ psp, # -4 ] !
 	mov tos, r0
 	next,
@@ -54,7 +63,7 @@ END-CODE
 \ SVC 10: The number of CPU cycles consumed in the last second.
 \ **********************************************************************
 CODE GetUsage  \ -- n 
-	svc # 10
+	svc # SAPI_VEC_USAGE
 	str tos, [ psp, # -4 ] !
 	mov tos, r0
 	next,
