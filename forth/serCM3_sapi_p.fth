@@ -2,13 +2,11 @@
 \ Written to run against the SockPuppet API.
 
 ((
-
 Adapted from: the LPC polled driver.
-
 ))
 
 only forth definitions
-
+variable cnt.pause 
 
 \ ==============
 \ *! serCM3_sapi_p
@@ -55,9 +53,9 @@ END-CODE
 
 : (seremit)	\ char base -- 
 \ *G Wrapped call that checks for throttling, and if so,
-\ calls PAUSE to let another task run.
+\ calls PAUSE to let another task run.  Count these events for debugging purposes.
 	(seremitfc)
-	0<> IF PAUSE THEN
+	0<> IF 1 cnt.pause +! PAUSE THEN
 	;
 
 : (sertype)	\ caddr len base --
