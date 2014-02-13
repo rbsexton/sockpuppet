@@ -20,11 +20,12 @@
 \ so this is not so easily parameterized.
 
 #0 equ SAPI_VEC_VERSION
-#1 equ SAPI_VEC_PUTCHAR
-#2 equ SAPI_VEC_GETCHAR
-#3 equ SAPI_VEC_CHARSAVAIL
+#1 equ SAPI_VEC_VARS
+#2 equ SAPI_VEC_PUTCHAR
+#3 equ SAPI_VEC_GETCHAR
+#4 equ SAPI_VEC_CHARSAVAIL
 
-#8 equ SAPI_VEC_VARS
+#8 equ SAPI_VEC_PETWATCHDOG
 #9 equ SAPI_VEC_USAGE
 #10 equ SAPI_VEC_GETMS
 
@@ -46,6 +47,14 @@ CODE GetSharedVars  \ -- n
 	svc # SAPI_VEC_VARS 
 	str tos, [ psp, # -4 ] !
 	mov tos, r0
+	next,
+END-CODE
+
+\ **********************************************************************
+\ SVC 8: Refresh the watchdog
+\ **********************************************************************
+CODE PetWatchDog  \ -- 
+	svc # SAPI_VEC_PETWATCHDOG
 	next,
 END-CODE
 
