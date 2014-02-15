@@ -5,7 +5,7 @@
 \ SVC 3: getchar
 \ SVC 4: charsavail
 
-\ SVC 5: Reserved
+\ SVC 5: LaunchUserApp
 \ SVC 6: Reserved
 \ SVC 7: Reserved
 
@@ -24,6 +24,7 @@
 #2 equ SAPI_VEC_PUTCHAR
 #3 equ SAPI_VEC_GETCHAR
 #4 equ SAPI_VEC_CHARSAVAIL
+#5 equ SAPI_VEC_STARTAPP
 
 #8 equ SAPI_VEC_PETWATCHDOG
 #9 equ SAPI_VEC_USAGE
@@ -47,6 +48,14 @@ CODE GetSharedVars  \ -- n
 	svc # SAPI_VEC_VARS 
 	str tos, [ psp, # -4 ] !
 	mov tos, r0
+	next,
+END-CODE
+
+\ **********************************************************************
+\ SVC 5: Do a stack switch and startup the user App.
+\ **********************************************************************
+CODE StartForth  \ -- 
+	svc # SAPI_VEC_STARTAPP
 	next,
 END-CODE
 
