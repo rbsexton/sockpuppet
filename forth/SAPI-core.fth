@@ -25,7 +25,8 @@
 #3 equ SAPI_VEC_GETCHAR
 #4 equ SAPI_VEC_CHARSAVAIL
 #5 equ SAPI_VEC_STARTAPP
-
+#6 equ SAPI_VEC_PRIVMODE
+#7 equ SAPI_VEC_MPULOAD
 #8 equ SAPI_VEC_PETWATCHDOG
 #9 equ SAPI_VEC_USAGE
 #10 equ SAPI_VEC_GETMS
@@ -52,10 +53,31 @@ CODE GetSharedVars  \ -- n
 END-CODE
 
 \ **********************************************************************
-\ SVC 5: Do a stack switch and startup the user App.
+\ SVC 5: Do a stack switch and startup the user App.  Its a one-way
+\ trip, so don't worry about stack cleanup.
 \ **********************************************************************
-CODE StartForth  \ -- 
+CODE RestartForth ( c-addr ) \ -- 
+	mov r0, tos
 	svc # SAPI_VEC_STARTAPP
+	next,
+END-CODE
+
+\ **********************************************************************
+\ SVC 6: Request Privileged Mode.  In some systems, this is a huge
+\ Security hole.
+\ **********************************************************************
+CODE privmode  \ -- 
+	svc # SAPI_VEC_PRIVMODE
+	next,
+END-CODE
+
+\ **********************************************************************
+\ SVC 7: Ask for MPU entry updates.
+\ **********************************************************************
+CODE MPULoad  \ -- 
+	mov r0, tos
+	svc # SAPI_VEC_MPULOAD
+	ldr tos, [ psp ], # $04	
 	next,
 END-CODE
 
