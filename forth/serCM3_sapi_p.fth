@@ -80,7 +80,7 @@ END-CODE
 
 CODE (serkey?)     \ base -- t/f
 \ *G Return true if the given UART has a character avilable to read.
-\ The call returns 0 or 1.  If 1, subtract 2.
+\ The call returns 0 or 1.  
 	mov r0, tos
 	svc # SAPI_VEC_CHARSAVAIL		
 	mov tos, r0
@@ -91,7 +91,7 @@ END-CODE
 \ *G Wait for a character to come available on the given UART and
 \ ** return the character.
   begin
-[ tasking? ] [if] pause [else] wfi [then] 
+[ tasking? ] [if] pause [then] 
   dup (serkey?)
   until
   (sergetchar) 
@@ -122,13 +122,13 @@ create Console0	\ -- addr ; OUT managed by upper driver
   ' sertype0 ,		\ caddr len -- ; display string
   ' sercr0 ,		\ -- ; display new line
 
-\ UART1
-: seremit1  #1 (seremit)  ;
-: sertype1	#1 (sertype)  ;
-: sercr1	#1 (sercr)  ;
-: serkey?1	#1 (serkey?)  ;
-: serkey1	#1 (serkey)  ;
-create Console1 ' serkey1 , ' serkey?1 , ' seremit1 , ' sertype1 , ' sercr1 ,	
+\ UART2
+: seremit2      #2 (seremit)  ;
+: sertype2	#2 (sertype)  ;
+: sercr2	#2 (sercr)  ;
+: serkey?2	#2 (serkey?)  ;
+: serkey2	#2 (serkey)  ;
+create Console2 ' serkey2 , ' serkey?2 , ' seremit2 , ' sertype2 , ' sercr2 ,	
 
 \ Versions for use with the TCP Port (10)
 : seremit10  #10 (seremit)  ;
