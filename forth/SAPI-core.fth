@@ -30,6 +30,7 @@
 #8 equ SAPI_VEC_PETWATCHDOG
 #9 equ SAPI_VEC_USAGE
 #10 equ SAPI_VEC_GETMS
+#11 equ SAPI_VEC_SET_IO_CALLBACK
 
 \ **********************************************************************
 \ SVC 0: Return the version of the API in use.
@@ -108,4 +109,20 @@ CODE GetUsage  \ -- n
 	mov tos, r0
 	next,
 END-CODE
+
+\ **********************************************************************
+\ SVC 11: Set the IO Callback address for a stream.
+\ iovec, read/write (r=1), address to set as zero.
+\ Note the minor parameter swizzle here to keep the old value on TOS.
+\ **********************************************************************
+CODE SetIOCallback  \ addr iovec read/write -- n 
+	mov r1, tos
+	ldr r0, [ psp ], # 4 !
+	ldr r2, [ psp ], # 4 !
+   	svc # SAPI_VEC_SET_IO_CALLBACK
+	mov tos, r0
+	next,
+END-CODE
+
+
 
