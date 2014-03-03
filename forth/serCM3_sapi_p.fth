@@ -55,7 +55,7 @@ END-CODE
 \ *G Wrapped call that checks for throttling, and if so,
 \ calls PAUSE to let another task run.  Count these events for debugging purposes.
 	(seremitfc)
-	0<> IF 1 cnt.pause +! PAUSE THEN
+	0<> IF 1 cnt.pause +! #5 ms THEN
 	;
 
 : (sertype)	\ caddr len base --
