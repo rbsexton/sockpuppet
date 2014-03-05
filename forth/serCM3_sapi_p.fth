@@ -99,7 +99,6 @@ END-CODE
 	self tcb.bbstatus @ over 1 setiocallback drop ( base oldcb )
 	self halt 
 	dup (serkey?) IF self restart ELSE PAUSE THEN \ We are now armed and ready to block
-	(serkey?)
 ;
 
 \ Advanced usage - Register a callback. 
