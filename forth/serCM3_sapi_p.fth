@@ -96,10 +96,10 @@ END-CODE
 ;
 
 : (serkey-sleep?)
-	self tcb.bbstatus @ over 1 setiocallback drop ( base oldcb )
+	self tcb.bbstatus @ over 1 setiocallback drop ( base )
 	self halt 
 	dup (serkey?) IF self restart ELSE PAUSE THEN \ We are now armed and ready to block
-    (serkey?)
+    (serkey?) 
 ;
 
 \ *G Wait for a character to come available on the given UART and
