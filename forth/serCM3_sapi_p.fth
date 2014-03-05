@@ -30,9 +30,6 @@ target
 \ ********************
 \ *S Serial primitives
 \ ********************
-
-0 value sercallback 
-
 internal
 
 : +FaultConsole	( -- )  ;
