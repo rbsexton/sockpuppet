@@ -99,22 +99,19 @@ END-CODE
 	self tcb.bbstatus @ over 1 setiocallback drop ( base oldcb )
 	self halt 
 	dup (serkey?) IF self restart ELSE PAUSE THEN \ We are now armed and ready to block
+    (serkey?)
 ;
 
+\ *G Wait for a character to come available on the given UART and
+\ ** return the character.
 \ Advanced usage - Register a callback. 
 \ The tricky part is not screwing things up by missing a character
 \ in the window between when you register, and when you pick up your
 \ character.   The way to do that is by registering, then self 
 \ halting, and then checking for a new character.  That ensures that
 \ if a character has slipped in, you will catch it.
-: (serkey-callback)
-	begin dup (serkey-sleep?) until (sergetchar)
-;
-
 : (serkey)	\ base -- char
-\ *G Wait for a character to come available on the given UART and
-\ ** return the character.
-	sercallback IF (serkey-callback) ELSE (serkey-basic) THEN
+	begin dup (serkey-sleep?) until (sergetchar)
 ;
 
 external 
