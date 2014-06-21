@@ -1,6 +1,10 @@
 /// @file sapi-dylink.h
 /// @brief Define the record used for runtime linking.
 
+#ifndef __STDINT_H__
+#include <stdint.h>
+#endif
+
 /// This structure allows forth to easily look up things on the C
 /// side of the world.  
 /// 
@@ -31,13 +35,13 @@ typedef struct {
 	int16_t size;  ///< Size in bytes
 	int16_t count; ///< How many
 	int8_t kind;   ///< Is this a variable or a constant?
-	int8_t strlen;   ///< Length of the string
-	char  *name; ///< Null-Terminated C string.
+	uint8_t strlen;   ///< Length of the string
+	char  name[]; ///< Null-Terminated C string.
 	} runtimelink_t;
 
 
 /// Helper Macro.
-#define FORTHNAME(x) (sizeof(x)-1),x
+#define FORTHNAME(x) ( (int8_t) sizeof(x)-1), (x)
 
 extern const runtimelink_t dynamiclinks[];
 
