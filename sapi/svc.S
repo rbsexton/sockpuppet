@@ -33,42 +33,36 @@ SVCHandler:
 	@ No more code...  We've already jumped.
 
 	.align 1
+
+// ------------------------------------------------------------
+// Required vectors 
+// ------------------------------------------------------------
+
 syscall_table:
 	.extern __SAPI_RFU
 	.extern __SAPI_Disabled
 
-	.extern __SAPI_Version
-	.extern __SAPI_GetLinkList
-	.extern __SAPI_StreamPutChar
-	.extern __SAPI_StreamGetChar
-	.extern __SAPI_StreamCharsAvail
-	.extern __SAPI_WatchdogKick
+	.extern __SAPI_00_Version
+	.extern __SAPI_01_GetLinkList
+	.extern __SAPI_02_PutChar
+	.extern __SAPI_03_GetChar
+	.extern __SAPI_04_CharsAvail
+	.extern __SAPI_08_WatchdogKick
 	.extern __SAPI_GetTimeMS
-
-	.word	__SAPI_Version		@ SVC 0
-	.word	__SAPI_GetLinkList	@ SVC 1
-	.word	__SAPI_StreamPutChar	@ SVC 2
-	.word	__SAPI_StreamGetChar	@ SVC 3
-	.word	__SAPI_StreamCharsAvail	@ SVC 4
-
-	.word	__SAPI_RFU	@ SVC  5 - Reserved
-	.word	__SAPI_RFU	@ SVC  6 - Reserved
-	.word	__SAPI_RFU	@ SVC  7 - Reserved
-
-#if (SAPI_WATCHDOG)
-	.word	__SAPI_WatchdogKick	@ SVC  8 
-#else 
-	.word	__SAPI_RFU	@ SVC  8 - Reserved
-#endif 
-	.word   __SAPI_GetTimeMS        @ SVC 9
-
-	@ End of Mandatory Calls.
-#if (SAPI_USAGE)
 	.extern __SAPI_GetUsage
+
+	.word	__SAPI_00_Version		@ SVC 0
+	.word	__SAPI_01_GetLinkList	@ SVC 1
+	.word	__SAPI_02_PutChar		@ SVC 2
+	.word	__SAPI_03_GetChar		@ SVC 3
+	.word	__SAPI_04_CharsAvail	@ SVC 4
+	.word	__SAPI_05_LauchUserApp  @ SVC 5
+	.word	__SAPI_Disabled			@ SVC 6 
+	.word	__SAPI_Disabled			@ SVC 7 
+	.word	__SAPI_WatchdogKick		@ SVC 8 Watchdog Kick
+	.word	__SAPI_Disabled			@ SVC 8 
+	.word   __SAPI_GetTimeMS        @ SVC 9
 	.word   __SAPI_GetUsage         @ SVC 10
-#else
-	.word	__SAPI_Disabled			@ SVC  10
-#endif
 
 #if (SAPI_LWIP) 
 	.extern __SAPI_DNSLookup
