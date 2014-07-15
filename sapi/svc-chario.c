@@ -13,6 +13,11 @@
 // More advanced implementations will need to support both
 // UARTs and USB and/or networked comms, so this is an intermediate layer
 #include <stdint.h>
+#include "sapi.h"
+
+extern void putchar_uart(uint32_t *);
+extern void getchar_uart(uint32_t *);
+extern void chars_available_uart(uint32_t *);
 
 /// __SAPI_02_PutChar 
 // The basic putchar, with backpressure.   The called function
@@ -29,7 +34,7 @@ void __SAPI_02_PutChar(uint32_t *frame) {
 /// __SAPI_03_GetChar 
 /// Pull a character out of the stream of choice
 /// This gets called when CharsAvail says there is work to do.
-void __SAPI_03_GetChar(long *frame) {
+void __SAPI_03_GetChar(uint32_t *frame) {
 	if (frame[0] < 10 ) {
 		getchar_uart(frame);
 		}
@@ -39,7 +44,7 @@ void __SAPI_03_GetChar(long *frame) {
 	
 /// __SAPI_04_CharsAvail
 /// Check to see if there is a char available
-void __SAPI_04_CharsAvail(long *frame) {
+void __SAPI_04_CharsAvail(uint32_t *frame) {
 	if (frame[0] < 10 ) {
 		chars_available_uart(frame);
 		}

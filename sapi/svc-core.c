@@ -20,6 +20,8 @@
 // API Version 0203.  Add a return code to StreamPutChar for back-pressure.
 // Re-organize the code to make it less machine specific.
 #include <stdint.h>
+#include "sapi.h"
+#include "sapi-dylink.h"
 
 // *******************************************************************
 // MANDATORY CALLS
