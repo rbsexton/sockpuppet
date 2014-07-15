@@ -14,3 +14,6 @@ extern void SAPI_StreamPuts(int, char*); // Put a char to a descriptor
 extern int SAPI_GetTimeMS();
 extern void SAPI_SetTimeMS(int);
 
+// Needed for user app launch.
+extern uint32_t app_restart_requested;
+extern void launchuserapp(uint32_t *);
