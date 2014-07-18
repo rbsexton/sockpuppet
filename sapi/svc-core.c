@@ -23,6 +23,10 @@
 #include "sapi.h"
 #include "sapi-dylink.h"
 
+#ifndef MSCOUNTER 
+#error You must define MSCOUNTER 
+#endif
+
 // *******************************************************************
 // MANDATORY CALLS
 // *******************************************************************
@@ -37,6 +41,12 @@ void __SAPI_00_Version(uint32_t *frame) {
 void __SAPI_01_GetLinkList(uint32_t *frame) {
         frame[0] = (uint32_t) dynamiclinks;
         }
+
+/// SVC 10: Return the current time.
+void __SAPI_10_GetTimeMS(uint32_t *frame) {
+	frame[0] = MSCOUNTER;
+	}
+
 
 // *******************************************************************
 // Helper Functions
