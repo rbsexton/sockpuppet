@@ -1,8 +1,6 @@
 /// \file syscalls-chario.c
 /// \brief Sockpuppet API System Call functions for character IO
 /// \defgroup SAPI Sockpuppet 
-//! \addtogroup SAPI
-//! @{
 /// 
 //
 // Copyright(C) 2011-2014 Robert Sexton
@@ -44,10 +42,20 @@ void __SAPI_03_GetChar(uint32_t *frame) {
 	
 /// __SAPI_04_CharsAvail
 /// Check to see if there is a char available
-void __SAPI_04_CharsAvail(uint32_t *frame) {
+void __SAPI_04_GetCharAvail(uint32_t *frame) {
 	if (frame[0] < 10 ) {
 		chars_available_uart(frame);
 		}
 	// Network ports go here.
 	return;
 	}	
+
+/// __SAPI_05_PutCharHasRoom
+/// Check to see if there is room for more in a given descriptor
+/// This is currently a place holder.   Lie  
+void __SAPI_05_PutCharHasRoom(uint32_t *frame) {
+	frame[0] = 1;
+	return;
+	}	
+
+
