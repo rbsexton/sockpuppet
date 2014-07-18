@@ -24,7 +24,7 @@
 uint32_t app_restart_requested = 0;
 
 /// @brief SVC 5: Springboard over to the user app launch code.
-void __SAPI_05_LauchUserApp(uint32_t *frame) {
+void __SAPI_06_LauchUserApp(uint32_t *frame) {
 	launchuserapp(frame);
 	}
 
