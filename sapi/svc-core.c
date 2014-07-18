@@ -1,8 +1,6 @@
 /// \file syscalls.c
 /// \brief Sockpuppet API System Call functions
 /// \defgroup SAPI Sockpuppet 
-//! \addtogroup SAPI
-//! @{
 /// 
 /// Sockpuppet API Code.  This is our
 /// shim for Forth.  Should be very easy to port
