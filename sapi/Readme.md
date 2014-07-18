@@ -12,9 +12,9 @@ Notes - Implementation Notes.
 Things for Building a sample application to run under SAPI on a LM3S6965:
 Makefile 
 
-app.ld app_crt0.c app_main.c - Application sample code.
+app.ld app_crt0.c app_main.c app-api.c - Application sample code.
 
-sapi.c sapi.h - SAPI interface calls used by C client
+sapi.h - Required header for complilation.
 
 ------
 sapi-dylink.h - Dynamic Linking Definitions 
@@ -24,12 +24,16 @@ Bits for adding SAPI support to a C environment host:
 
 ringbuffer.c ringbuffer.h - Ringbuffer routines for use by SAPI.
 
-svc.S - Call Dispatch Table
+svchandler.S - Call Dispatch Table
+svc-core.s - Core SAPI calls
+svc-chario.c - Character IO call layer.  Invokes platform-specific code.
+svc-userapp.c - Launch the thread-mode app via the PendSV mechanism.
+svc-stubs.c - Defined but not yet implemented.
+svc-privs.c - Getting in and out of privileged modes, MPU support
 
-syscalls.c - System Call Code.
-
-userapp.c userapp.h - Functions for detecting and starting the SAPI Client
-
+------ Target-Specific code for TI Stellaris/Tiva Cortexes
+lm3s-uart.c - Target specific uart code.
+lm3s-userapp.c - Getting the part into PendSV 
 
 ------
 lm3s-testbed - Source files for a minimal SAPI host to run on the LM3S6965
