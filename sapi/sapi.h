@@ -1,19 +1,13 @@
-// sockpuppet.h
-// Define the sockpuppet API.
-// These are listed in numeric order.
-
-extern int  SAPI_Version();	  // 0 Get API Version
-
-extern void SAPI_StreamPutChar(int, int); // 1 Put a char to a descriptor
-extern int  SAPI_StreamGetChar(int);	  // 2 get a char from a descriptor
-
-extern int  SAPI_StreamCharsAvail(int);	  // 3 is data available?
-
-extern void SAPI_StreamPuts(int, char*); // Put a char to a descriptor
-
-extern int SAPI_GetTimeMS();
-extern void SAPI_SetTimeMS(int);
+// sapi.h
+// Required headers for compilation.
+// 
 
 // Needed for user app launch.
 extern uint32_t app_restart_requested;
 extern void launchuserapp(uint32_t *);
+
+// Forth does not actually require a MS counter in the basic config, 
+// but I consider it to be a requirement.
+// Networking stacks will be doing this anyway.
+
+extern volatile MSCOUNTER
