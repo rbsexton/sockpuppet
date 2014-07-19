@@ -10,10 +10,10 @@
 #include <stdint.h>
 #include "sapi.h"
 
-// __SAPI_07_MPULoad
+// __SAPI_11_MPULoad
 // Allow a user thread to load MPU slots 2-5.
  
-void __SAPI_07_MPULoad(uint32_t *frame) {
+void __SAPI_11_MPULoad(uint32_t *frame) {
   __asm(
           "push { r5 }\n"
           "ldr r1, [ r0, #0 ]\n"
@@ -26,3 +26,6 @@ void __SAPI_07_MPULoad(uint32_t *frame) {
         );
 	}
 
+// __SAPI_12_PrivMode - Get supervisor privileges.
+// Needs to be re-written in portable assembly. 
+void __SAPI_12_GetPrivs(long *frame) { return; } 

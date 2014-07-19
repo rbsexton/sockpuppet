@@ -10,7 +10,7 @@
 .text
 .syntax unified
 
-__SAPI_00_Version:
+__SAPI_00_ABIVersion:
 	mov r1, #0x300
 	str r1, [r0, #0]
 	bx lr  
@@ -48,38 +48,36 @@ syscall_table:
 	.extern __SAPI_RFU
 	.extern __SAPI_Disabled
 
-	.extern __SAPI_00_Version
-	.extern __SAPI_01_GetLinkList
-	.extern __SAPI_02_PutChar
-	.extern __SAPI_03_GetChar
-	.extern __SAPI_04_CharsAvail
-	.extern __SAPI_08_WatchdogKick
-	.extern __SAPI_GetTimeMS
-	.extern __SAPI_GetUsage
-
-	.extern __SAPI_00_Version		@ SVC 0  -
 	.extern __SAPI_01_GetLinkList	@ SVC 1  - 
 	.extern __SAPI_02_PutChar		@ SVC 2  - Required
 	.extern	__SAPI_03_GetChar		@ SVC 3  - Required
 	.extern	__SAPI_04_GetCharAvail	@ SVC 4  - Required
-	.extern	__SAPI_05_PutCharRoom	@ SVC 5
-	.extern	__SAPI_06_LauchUserApp  @ SVC 6
-	.extern	__SAPI_07_MPULoad		@ SVC 7 
-	.extern __SAPI_08_GetUsageCPU   @ SVC 8
-	.extern	__SAPI_09_PetWatchdog	@ SVC 9
-	.extern __SAPI_10_GetTimeMS     @ SVC 10
+	.extern	__SAPI_05_PutCharHasRoom	 
+	.extern	__SAPI_06_SetIOCallback	@ 
+	.extern __SAPI_07_GetTimeMS     @ 
 
-	.word	__SAPI_00_Version		 @ SVC 0  -
+	.extern	__SAPI_10_LauchUserApp  
+	.extern	__SAPI_11_MPULoad		 
+	.extern	__SAPI_12_GetPrivs		 
+	.extern __SAPI_13_GetUsageCPU   
+	.extern	__SAPI_14_PetWatchdog	
+
+	.word	__SAPI_00_ABIVersion	 @ SVC 0  -
 	.word	__SAPI_01_GetLinkList	 @ SVC 1  - 
 	.word	__SAPI_02_PutChar		 @ SVC 2  - Required
 	.word	__SAPI_03_GetChar		 @ SVC 3  - Required
 	.word	__SAPI_04_GetCharAvail	 @ SVC 4  - Required
 	.word	__SAPI_05_PutCharHasRoom @ SVC 5
-	.word	__SAPI_06_LauchUserApp   @ SVC 6
-	.word	__SAPI_07_MPULoad		 @ SVC 7 
-	.word   __SAPI_08_GetUsageCPU    @ SVC 8
-	.word	__SAPI_09_PetWatchdog	 @ SVC 9
-	.word   __SAPI_10_GetTimeMS      @ SVC 10
+	.word	__SAPI_06_SetIOCallback	 @ 
+	.word   __SAPI_07_GetTimeMS      @ SVC 07
+	.word	__SAPI_Disabled			@ SVC 08
+	.word	__SAPI_Disabled			@ SVC 09
+
+	.word	__SAPI_10_LauchUserApp   
+	.word	__SAPI_11_MPULoad		  
+	.word	__SAPI_12_GetPrivs		 
+	.word   __SAPI_13_GetUsageCPU    
+	.word	__SAPI_14_PetWatchdog	 
 
 #if (SAPI_LWIP) 
 	.extern __SAPI_DNSLookup

@@ -34,8 +34,8 @@ void __SAPI_01_GetLinkList(uint32_t *frame) {
         frame[0] = (uint32_t) dynamiclinks;
         }
 
-/// SVC 10: Return the current time.
-void __SAPI_10_GetTimeMS(uint32_t *frame) {
+/// SVC 07: Return the current time.
+void __SAPI_07_GetTimeMS(uint32_t *frame) {
 	frame[0] = MSCOUNTER;
 	}
 

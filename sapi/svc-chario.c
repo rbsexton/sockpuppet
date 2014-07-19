@@ -57,5 +57,12 @@ void __SAPI_05_PutCharHasRoom(uint32_t *frame) {
 	frame[0] = 1;
 	return;
 	}	
+	
+/// __SAPI_06_SetIOCallback
+/// The drivers can implement an optional callback via a write of 1 to a 
+/// supplied address.
+void __SAPI_06_SetIOCallback(uint32_t *frame) { return; }
+	
+	
 
 

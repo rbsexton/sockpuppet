@@ -23,14 +23,16 @@
 #1 equ SAPI_VEC_VARS
 #2 equ SAPI_VEC_PUTCHAR
 #3 equ SAPI_VEC_GETCHAR
-#4 equ SAPI_VEC_CHARSAVAIL
-#5 equ SAPI_VEC_STARTAPP
-#6 equ SAPI_VEC_PRIVMODE
-#7 equ SAPI_VEC_MPULOAD
-#8 equ SAPI_VEC_PETWATCHDOG
-#9 equ SAPI_VEC_USAGE
-#10 equ SAPI_VEC_GETMS
-#11 equ SAPI_VEC_SET_IO_CALLBACK
+#4 equ SAPI_VEC_GETCHARAVAIL
+#5 equ SAPI_VEC_PUTCHARHASROOM
+#6 equ SAPI_VEC_SET_IO_CALLBACK
+#7 equ SAPI_VEC_GETMS
+
+#10 equ SAPI_VEC_STARTAPP
+#11 equ SAPI_VEC_MPULOAD
+#12 equ SAPI_VEC_PRIVMODE
+#13 equ SAPI_VEC_USAGE
+#14 equ SAPI_VEC_PETWATCHDOG
 
 \ **********************************************************************
 \ SVC 0: Return the version of the API in use.
@@ -54,7 +56,7 @@ CODE GetSharedVars  \ -- n
 END-CODE
 
 \ **********************************************************************
-\ SVC 5: Do a stack switch and startup the user App.  Its a one-way
+\ Do a stack switch and startup the user App.  Its a one-way
 \ trip, so don't worry about stack cleanup.
 \ **********************************************************************
 CODE RestartForth ( c-addr ) \ -- 
@@ -64,7 +66,7 @@ CODE RestartForth ( c-addr ) \ --
 END-CODE
 
 \ **********************************************************************
-\ SVC 6: Request Privileged Mode.  In some systems, this is a huge
+\ Request Privileged Mode.  In some systems, this is a huge
 \ Security hole.
 \ **********************************************************************
 CODE privmode  \ -- 
@@ -73,7 +75,7 @@ CODE privmode  \ --
 END-CODE
 
 \ **********************************************************************
-\ SVC 7: Ask for MPU entry updates.
+\ Ask for MPU entry updates.
 \ **********************************************************************
 CODE MPULoad  \ -- 
 	mov r0, tos
@@ -83,7 +85,7 @@ CODE MPULoad  \ --
 END-CODE
 
 \ **********************************************************************
-\ SVC 8: Refresh the watchdog
+\ Refresh the watchdog
 \ **********************************************************************
 CODE PetWatchDog  \ -- 
 	svc # SAPI_VEC_PETWATCHDOG
@@ -91,7 +93,7 @@ CODE PetWatchDog  \ --
 END-CODE
 
 \ **********************************************************************
-\ SVC 9: Return Millisecond ticker value.
+\ Return Millisecond ticker value.
 \ **********************************************************************
 CODE Ticks  \ -- n 
 	svc # SAPI_VEC_GETMS
@@ -101,7 +103,7 @@ CODE Ticks  \ -- n
 END-CODE
 
 \ **********************************************************************
-\ SVC 10: The number of CPU cycles consumed in the last second.
+\ The number of CPU cycles consumed in the last second.
 \ **********************************************************************
 CODE GetUsage  \ -- n 
 	svc # SAPI_VEC_USAGE
@@ -111,7 +113,7 @@ CODE GetUsage  \ -- n
 END-CODE
 
 \ **********************************************************************
-\ SVC 11: Set the IO Callback address for a stream.
+\ Set the IO Callback address for a stream.
 \ iovec, read/write (r=1), address to set as zero.
 \ Note the minor parameter swizzle here to keep the old value on TOS.
 \ **********************************************************************
