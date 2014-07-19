@@ -3,6 +3,45 @@
 \ In the MPE environment, VALUEs work very well for this.
 \ values are defined at compile time and can be updated at runtime.
 
+\ So the basic logic is - walk the dynamic list, and if you find something
+\ that is already defined, assume its a VALUE
+\ otherwise, generate a constant.
+
+\ Walk the table and make the constants.
+: dy-populate
+  dy-first@ 
+  begin  
+     dup dy.val 0<> 
+  while
+     dup dy-create
+     dy-recordlen +
+  repeat
+  drop
+  ;   
+
+\ The key bit.  Look for an entry and if its a value, update it.
+\ otherwise, add a constant to the dictionary.
+: dy-create ( c-addr -- )
+        \ Start by looking it up
+        DUP dy-cstring \ Make a counted string out of it.
+
+        dy.buf find 
+        0= IF \ If failure, cleanup and make-const 
+                DROP
+                dup dy.val \ c-addr n 
+                swap dup dy.name swap dy.namelen  \ n c-addr b
+                make-const
+        ELSE \ If Success, get the value and stuff it in there.
+                SWAP dy.val \ Fetch the value
+                SWAP dy-stuff
+        THEN
+    ;
+
+
+
+
+: dy-first@ ( -- c-addr ) getsharedvars dy-recordlen + ; 
+: dy-cstring ( c-addr -- ) dy.name OVER dy.namelen dy.buf place ; 
 
 \ ************************************************************************
 \ ************************************************************************
@@ -19,6 +58,10 @@
 : dy.type    #8 + c@ ;
 : dy.namelen #9 + c@ ;
 : dy.name   #12 +  @ ;
+
+UDATA \ We need a scratch buffer.
+create dy.buf $20 allot
+CDATA
 
 \ Return the recordlength.  Its the first thing.
 : dy-recordlen getsharedvars @ ;
@@ -48,7 +91,10 @@
 
 	r> ,        \ lay down the link field for the next word - required
 	;
-	
+
+\ Take an XT of a VALUE, and stuff something in there.
+: dy-stuff ( n xt -- )  8 + @ ! ; 
+
 \ Dump out an entry as a set of constants
 : dy-print \ c-addr --
      S" $" type
