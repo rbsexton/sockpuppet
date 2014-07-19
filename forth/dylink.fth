@@ -1,4 +1,8 @@
 \ Code to support runtime/dynamic into the C side via SAPI.
+\
+\ In the MPE environment, VALUEs work very well for this.
+\ values are defined at compile time and can be updated at runtime.
+
 
 \ ************************************************************************
 \ ************************************************************************
@@ -24,18 +28,6 @@
   dup dy.name swap dy.namelen  
 ;  
 
-\ Heres some assembly code to use as a template.
-\ I experimented a bit, and the simplest thing in the MPE
-\ Forth environment is to lay down the assembly
-((
-CODE rawconstant
-	str tos, [ psp, # -4 ] ! \ register push
-    ldr tos, L$1
-	bx lr
-L$1: str tos, [ psp, # -4 ] ! \ 32-bit dummy instruction
-END-CODE
-))
-
 \ Create a constant from scratch by laying down some assembly
 \ A key trick is that we have to lay down a pointer to 
 \ the first character of the defintion after we finish
@@ -43,7 +35,8 @@ END-CODE
 : make-const \ n s-addr c --
 	here 4+ >r \ This should point to the newly-created header.
 	makeheader \
-	
+
+\ This is what a constant looks like after emerging from the compiler.	
 \ ( 0002:0270 4CF8047D Lx.} )  str r7, [ r12, # $-04 ]!
 \ ( 0002:0274 004F .O )        ldr r7, [ PC, # $00 ] ( @$20278=$7D04F84C )
 \ ( 0002:0276 7047 pG )        bx LR
