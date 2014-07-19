@@ -27,5 +27,10 @@ void __SAPI_11_MPULoad(uint32_t *frame) {
 	}
 
 // __SAPI_12_PrivMode - Get supervisor privileges.
-// Needs to be re-written in portable assembly. 
-void __SAPI_12_GetPrivs(long *frame) { return; } 
+void __SAPI_12_GetPrivs(long *frame) { 
+  __asm(
+          "mrs	r0, CONTROL\n"
+          "bic.w	r0, r0, #1\n"
+          "msr	CONTROL, r0\n"
+        );
+    } 
