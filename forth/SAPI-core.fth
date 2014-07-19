@@ -1,17 +1,6 @@
-\ Wrappers for SAPI Core functions
+\ Wrappers for SAPI functions
 \ SVC 0: Return the version of the API in use.
 \ SVC 1: Return the address of the shared variables table
-\ SVC 2: putchar
-\ SVC 3: getchar
-\ SVC 4: charsavail
-
-\ SVC 5: LaunchUserApp
-\ SVC 6: Reserved
-\ SVC 7: Reserved
-
-\ SVC 8: Watchdog Refresh
-\ SVC 9: Return Millisecond ticker value.
-\ SVC 10: The number of CPU cycles consumed in the last second.
 
 \ 2-4 are for use by the serial io routines, and are 
 \ defined elsewhere.
