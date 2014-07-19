@@ -29,12 +29,6 @@
 // MANDATORY CALLS
 // *******************************************************************
 
-/// @brief SVC 0: Return an API Version 
-void __SAPI_00_Version(uint32_t *frame) {
-	frame[0] = 0x0203;
-	return;
-	}
-
 /// SVC 1: Return the address of the runtime link list
 void __SAPI_01_GetLinkList(uint32_t *frame) {
         frame[0] = (uint32_t) dynamiclinks;

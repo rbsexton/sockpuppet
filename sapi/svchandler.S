@@ -9,6 +9,12 @@
 
 .text
 .syntax unified
+
+__SAPI_00_Version:
+	mov r1, #0x300
+	str r1, [r0, #0]
+	bx lr  
+
 .thumb_func     @  Make sure the linker puts it in the table.
 .global SVCHandler
 SVCHandler:
