@@ -83,7 +83,7 @@ CODE (serkey?)     \ base -- t/f
 \ *G Return true if the given UART has a character avilable to read.
 \ The call returns 0 or 1.  
 	mov r0, tos
-	svc # SAPI_VEC_CHARSAVAIL		
+	svc # SAPI_VEC_GETCHARAVAIL		
 	mov tos, r0
 	next,	
 END-CODE
