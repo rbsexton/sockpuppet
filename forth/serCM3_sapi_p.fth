@@ -50,13 +50,20 @@ CODE (seremitfc)	\ char base --
     next,
 END-CODE
 
-: (seremit)	\ char base -- 
+: (seremit-blocking)	\ char base -- 
 \ *G Wrapped call that checks for throttling, and if so,
 \ calls PAUSE to let another task run.  Count these events for debugging purposes.
 	DUP >R (seremitfc)
 	0<> IF 1 cnt.pause +!
 		self tcb.bbstatus @ R> 0 setiocallback drop   stop 
 		else R> DROP then
+ 	;
+
+: (seremit)	\ char base -- 
+\ *G Wrapped call that checks for throttling, and if so,
+\ calls PAUSE to let another task run.  Count these events for debugging purposes.
+	(seremitfc)
+	0<> IF 1 cnt.pause +! PAUSE THEN
 	;
 
 : (sertype)	\ caddr len base --
@@ -88,13 +95,11 @@ CODE (serkey?)     \ base -- t/f
 	next,	
 END-CODE
 
-: (serkey-basic)
-	begin pause 
-	dup (serkey?) until 
-	(sergetchar)
-;
+\ Loop with pause until we get a non-zero result.
+: (serkey-pause) pause (serkey?) ;
 
-: (serkey-sleep?)
+\ A blocking version of (serkey-basic)
+: (serkey-block)
 	self tcb.bbstatus @ over 1 setiocallback drop ( base )
 	self halt 
 	dup (serkey?) IF self restart ELSE PAUSE THEN \ We are now armed and ready to block
@@ -110,7 +115,7 @@ END-CODE
 \ halting, and then checking for a new character.  That ensures that
 \ if a character has slipped in, you will catch it.
 : (serkey)	\ base -- char
-	begin dup (serkey-sleep?) until (sergetchar)
+	begin dup (serkey-pause) until (sergetchar)
 ;
 
 external 
