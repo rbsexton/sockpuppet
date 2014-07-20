@@ -129,7 +129,10 @@ void getchar_uart(uint32_t *frame) {
 ///
 /// Check to see if there is a char available
 // ----------------------------------------------------------------------------
+unsigned int count_sapi_charsavailable=0;
+
 void chars_available_uart(uint32_t *frame) {
+	count_sapi_charsavailable++;
 	frame[0] = UARTCharsAvail(uart_ports[frame[0]]);
 	return;
 	}	
