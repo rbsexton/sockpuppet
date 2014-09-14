@@ -55,6 +55,7 @@ syscall_table:
 	.extern	__SAPI_05_PutCharHasRoom	 
 	.extern	__SAPI_06_SetIOCallback	@ 
 	.extern __SAPI_07_GetTimeMS     @ 
+	.extern __SAPI_08_NVICReset     @ 
 
 	.extern	__SAPI_10_LauchUserApp  
 	.extern	__SAPI_11_MPULoad		 
@@ -70,7 +71,7 @@ syscall_table:
 	.word	__SAPI_05_PutCharHasRoom @ SVC 5
 	.word	__SAPI_06_SetIOCallback	 @ 
 	.word   __SAPI_07_GetTimeMS      @ SVC 07
-	.word	__SAPI_Disabled			@ SVC 08
+	.word	__SAPI_08_NVICReset		 @ 
 	.word	__SAPI_Disabled			@ SVC 09
 
 	.word	__SAPI_10_LauchUserApp   
@@ -79,33 +80,41 @@ syscall_table:
 	.word   __SAPI_13_GetUsageCPU    
 	.word	__SAPI_14_PetWatchdog	 
 
-#if (SAPI_LWIP) 
-	.extern __SAPI_DNSLookup
-	
-	.extern __SAPI_lwIP_udp_new	
-	.extern __SAPI_lwIP_udp_remove	
-	
-	.word   __SAPI_DNSLookup        @ SVC 11
-	.word	__SAPI_Disabled			@ SVC 12
-	.word	__SAPI_Disabled			@ SVC 13
-	.word	__SAPI_lwIP_udp_new		@ SVC 14
-	.word	__SAPI_lwIP_udp_remove  @ SVC 15
+	.word	__SAPI_Disabled			@ SVC 15
 	.word	__SAPI_Disabled			@ SVC 16
 	.word	__SAPI_Disabled			@ SVC 17
 	.word	__SAPI_Disabled			@ SVC 18
 	.word	__SAPI_Disabled			@ SVC 19
-	.word	__SAPI_Disabled			@ SVC 20
+
+#if (SAPI_LWIP) 
+	.extern __SAPI_20_GetIP
+
+	.extern __SAPI_21_PBuf_Ram_Alloc
+	.extern __SAPI_22_PBuf_Free
+
+	.extern __SAPI_23_DNS_GetHostByName
+
+	.extern __SAPI_24_UDP_GetPCB
+	.extern __SAPI_25_UDP_Connect
+	.extern __SAPI_26_UDP_Recv
+	.extern __SAPI_27_UDP_Send
+
+	
+	.word __SAPI_20_GetIP
+
+	.word __SAPI_21_PBuf_Ram_Alloc
+	.word __SAPI_22_PBuf_Free
+
+	.word __SAPI_23_DNS_GetHostByName
+	
+	.word __SAPI_24_UDP_GetPCB
+	.word __SAPI_25_UDP_Connect
+	.word __SAPI_26_UDP_Recv
+	.word __SAPI_27_UDP_Send
+	
 #else
-	.word	__SAPI_Disabled			@ SVC  11
-	.word	__SAPI_Disabled			@ SVC  12
-	.word	__SAPI_Disabled			@ SVC  13
-	.word	__SAPI_Disabled			@ SVC  14
-	.word	__SAPI_Disabled			@ SVC  15
-	.word	__SAPI_Disabled			@ SVC  16
-	.word	__SAPI_Disabled			@ SVC  17
-	.word	__SAPI_Disabled			@ SVC  18
-	.word	__SAPI_Disabled			@ SVC  19
 	.word	__SAPI_Disabled			@ SVC  20
+	.word	__SAPI_Disabled			@ SVC  21
 #endif
 
 syscall_table_end:
