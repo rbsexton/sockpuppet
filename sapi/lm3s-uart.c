@@ -190,6 +190,12 @@ void UARTHandler(uint32_t channel) {
 void UARTHandler0() { UARTHandler(0); }
 void UARTHandler1() { UARTHandler(1); }
 
+void SAPIUARTInit(int channel) {
+	UARTFIFOEnable(uart_ports[channel]);
+	UARTFIFOLevelSet(uart_ports[channel], UART_FIFO_TX4_8, UART_FIFO_RX1_8);
+	UARTIntEnable(uart_ports[channel], UART_INT_RT|UART_INT_RX|UART_INT_OE);
+	}
+	
 //! // Close the Doxygen group.
 //! @}
 
