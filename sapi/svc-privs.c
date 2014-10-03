@@ -12,17 +12,28 @@
 
 // __SAPI_11_MPULoad
 // Allow a user thread to load MPU slots 2-5.
- 
+// See http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dai0321a/BIHGJIBI.html
 void __SAPI_11_MPULoad(uint32_t *frame) {
   __asm(
-          "push { r5 }\n"
-          "ldr r1, [ r0, #0 ]\n"
-          "LDR R0,=0xE000ED9C @ Region Base Address register\n"
-          "LDMIA  R1!, {R2, R3, R4, R5}  @ Read 4 words from table\n"
-          "STMIA  R0!, {R2, R3, R4, R5}  @; write 4 words to MPU\n"
-          "LDMIA  R1!, {R2, R3, R4, R5}  @ Read 4 words from table\n"
-          "STMIA  R0!, {R2, R3, R4, R5}  @; write 4 words to MPU\n"
-          "pop { r5 }\n"
+          "PUSH { R5, LR }\n"
+
+          "LDR R0, [ R0, #0 ]\n"
+          "LDR R1,=0xE000ED9C @ Region Base Address register\n"
+ 
+          "LDR LR, [R1, #-8] @ Fetch the control register\n"
+          "BIC R2, LR, #0x0  @ Stash unchanged version for later.\n"
+          "DMB\n"
+		  "STR R2, [ R1, #-8]\n"
+
+          "LDMIA  R0!, {R2, R3, R4, R5}  @ Read 4 words from table\n"
+          "STMIA  R1!, {R2, R3, R4, R5}  @; write 4 words to MPU\n"
+          "LDMIA  R0!, {R2, R3, R4, R5}  @ Read 4 words from table\n"
+          "STMIA  R1!, {R2, R3, R4, R5}  @; write 4 words to MPU\n"
+
+		  "STR LR, [ R1, #-40] @ Enable/Put back the old value\n"
+		  "DSB\n"
+
+          "POP { R5, PC }\n"
         );
 	}
 
