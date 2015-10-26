@@ -13,6 +13,7 @@
 // __SAPI_11_MPULoad
 // Allow a user thread to load MPU slots 2-5.
 // See http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dai0321a/BIHGJIBI.html
+// No ISB required if this is followed by an exception return.
 void __SAPI_11_MPULoad(uint32_t *frame) {
   __asm(
           "PUSH { R5, LR }\n"
@@ -38,6 +39,8 @@ void __SAPI_11_MPULoad(uint32_t *frame) {
 	}
 
 // __SAPI_12_PrivMode - Get supervisor privileges.
+// According the the ARM docs ( DAI0321A ) you need a ISB after this,
+// but you get one for free when the exception return happens.
 void __SAPI_12_GetPrivs(long *frame) { 
   __asm(
           "mrs	r0, CONTROL\n"
