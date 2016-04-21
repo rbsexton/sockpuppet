@@ -4,6 +4,12 @@
 @ and passes it along to the routine as r0
 @ We're now in supervisor mode, so r0-r4 are 
 @ free for us to use as we see fit.
+@
+@ This is the core definition of whats basically a binary ABI
+@ So this is as good a place as any to define it.
+@ The tricky part is that the particulars of the ABI parameters are 
+@ basically implementation defined.  More below.
+@ This ABI was designed to support forth's character IO primitives.
 
 #include "sapiopts.h"
 
@@ -47,7 +53,7 @@ SVC_Handler:
 
 // ------------------------------------------------------------
 // The first 16 are whats required for bootstrapping forth.
-// TYPE and CR are 
+// TYPE and CR are special.
 // ------------------------------------------------------------
 
 syscall_table:
@@ -56,25 +62,59 @@ syscall_table:
 	  
 	@ This is the main syscall for runtime linking - symbolic lists, 
 	@ jump tables, etc.
+	@ R0 = 0 - Return a pointer to a symbol table.
+	@ R0 = 1 - Return a pointer to a bare jump table.
 	.word	__SAPI_01_GetRuntimeData	@ SVC 1  - 
 	.extern __SAPI_01_GetRuntimeData	- 
 
-	@ Putchar should return -1 for failure.
+	@ Notes about stream IO.   There are many cases where the user
+	@ app will not succeed.  In the model where threading/tasking
+	@ is a user space thing, the task in question must re-try any failing
+	@ or partial IO operations.  That allows the thread to yield and try again.
+	@
+	@ Single Character Write
+	@ R0 - Stream #
+	@ R1 - The Character.
+	@
+	@ Returns:
+	@ >0 - Success/Room for more.
+	@  0 - Success/Warning - The output buffer is full.
+	@ -1 - Failure/Retry
 	@ The user must be prepared to retry.
 	.word	__SAPI_02_PutChar		@ SVC 2/emit
 	.extern __SAPI_02_PutChar
 
+	@ Get the Next Character from the input queue
+	@ R0 - Stream #
+	@ Returns
+	@ R0 - The Character.  This one will block while waiting for input.
+	@ There is an assumption that you will call GetCharAvail first.
 	.word	__SAPI_03_GetChar		@ SVC 3/key
 	.extern	__SAPI_03_GetChar
 
-	.word	__SAPI_04_GetCharAvail	@ SVC 4/key?	
+	@ Check for characters in the input queue.
+	@ R0 - Stream #
+	@ Returns
+	@ R0 - The number of characters in the input queue.
+	@ There is an assumption that you will call GetCharAvail first.
+	.word	__SAPI_04_GetCharAvail	@ SVC 4/key?
 	.extern	__SAPI_04_GetCharAvail
 
 	@ Optional - These can improve performance.
-	@ Designed for retry - Returns the number of chars emitted.
+	
+	@ Put a block of characters.  TYPE.
+	@ R0 - Stream #
+	@ R1 - Number of Characters
+	@ R2 - Pointer to the data
+	@ Returns - Number of characters written.
 	.word	__SAPI_05_PutString     @ SVC 5/type	 
 	.extern	__SAPI_05_PutString     @ SVC 5
 
+	@ Send a newline or whatever corresponds to it.
+	@ R0 - Stream #
+	@ Returns
+	@  0: Success
+	@ -1: Failure
 	@ Returns -1 for failure.
 	.word	__SAPI_06_EOL			@ SVC 6/cr	 
 	.extern	__SAPI_06_EOL
@@ -88,9 +128,13 @@ syscall_table:
 	.word	__SAPI_RFU @ 13
 
 	@ These two are optional but likely to be useful.
+
+	@ R0 - Number of ticks (optional)
 	.word	__SAPI_14_PetWatchdog	 
 	.extern	__SAPI_14_PetWatchdog	
 
+	@ Returns
+	@ 32-bit Milliseconds.
 	.word   __SAPI_15_GetTimeMS     @ SVC 15/ticks
 	.extern __SAPI_15_GetTimeMS
 
