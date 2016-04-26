@@ -79,24 +79,26 @@ syscall_table:
 	@ Returns:
 	@ >0 - Success/Room for more.
 	@  0 - Success/Warning - The output buffer is full.
-	@ -1 - Failure/Retry
-	@ The user must be prepared to retry.
+	@ -1 - Failure - the client must retry
+	@
 	.word	__SAPI_02_PutChar		@ SVC 2/emit
 	.extern __SAPI_02_PutChar
 
-	@ Get the Next Character from the input queue
+	@ Single character read
 	@ R0 - Stream #
+	@
 	@ Returns
-	@ R0 - The Character.  This one will block while waiting for input.
-	@ There is an assumption that you will call GetCharAvail first.
+	@ >0 - the Character
+	@ -1 for failure
+	@
 	.word	__SAPI_03_GetChar		@ SVC 3/key
 	.extern	__SAPI_03_GetChar
 
-	@ Check for characters in the input queue.
+	@ Input buffer queue check.
 	@ R0 - Stream #
+	@
 	@ Returns
 	@ R0 - The number of characters in the input queue.
-	@ There is an assumption that you will call GetCharAvail first.
 	.word	__SAPI_04_GetCharAvail	@ SVC 4/key?
 	.extern	__SAPI_04_GetCharAvail
 

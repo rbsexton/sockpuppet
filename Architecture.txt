@@ -1,0 +1,60 @@
+Architecture notes.
+
+The SAPI interface is a minimal system call layer to support the needs of Forth.
+Its a textbook implementation for the Cortex-M - It uses the SVC instruction.
+
+There is a deeply important assumption here - the SAPI layer does NOT provide 
+task-management.  Task/thread management is provided by the client application.
+
+Terminology:
+- Supervisor
+ Runs at power-on reset and uses the master stack pointer.  
+ It initializes all hardware and then loads the program stack pointer from the client image
+ and launches the client.   
+
+- Client.
+ This is a minimal Cortex-M binary.   It only requires the first two Cortex-M vectors -
+ The initial stack pointer and the initial program counter.
+
+The sample code includes a SVC Exception handler that interfaces to the 
+system calls which in this case are written in C.
+
+System Call Parameters/Return codes are documented in svchandler.S
+
+-----------------------------------------------------------------
+Implementation Levels.   As the implementation complexity level goes
+up, more things are possible.  To reduce power, use the WFI instruction
+whenever possible to power down the CPU until something interesting happens.
+
+!!!!!!!!!!!!!!!!!!  Important !!!!!!!!!!!!!!!!!!!!!
+System calls can't block.  The SAPI is designed to support the needs
+of a client application that provides it's own 
+
+
+Level 0 - Getchar, Putchar, CharsAvailable.  No Device interrupts.
+
+These are all it takes to get up an going.  Forth polls via the system calls.  Implementations
+that use interrupts as part of serial device management can use WFI for power savings.
+
+Level 1 - Level 0 + IO Devices that generate interrupts.
+KEY can issue a WFI if there is no input available, or issue a WFI when Putchar
+returns full/blocked
+
+-----------------------------------------------------------------
+Dynamic Linking/Jump Tables.
+
+The supplied code includes a basic mechanism for exporting C (or other language)
+memory addresses or parameters to forth.  It defines a simple data structure
+that dylink.fth parses to create CONSTANTS at runtime or update the contents of VALUES.
+
+The GetRuntimeData syscall returns this value when called with an argument of zero.
+
+
+
+
+
+
+
+
+
+
