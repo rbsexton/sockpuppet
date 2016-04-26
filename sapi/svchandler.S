@@ -16,12 +16,14 @@
 .text
 .syntax unified
 
+.thumb_func @ Set the thumb bit in the linker.  
 __SAPI_00_ABIVersion:
 	mov r1, #0x400
 	str r1, [r0, #0]
 	bx lr  
 
 @ Hang out and wait for debugger help.
+.thumb_func
 __SAPI_RFU:
 	b __SAPI_RFU
 
