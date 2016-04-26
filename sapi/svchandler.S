@@ -29,6 +29,11 @@ __SAPI_RFU:
 
 .thumb_func     @  Make sure the linker puts it in the table.
 .global SVC_Handler
+
+@ Incorporate register marshalling.   Thats a little wasteful
+@ since all system calls don't need it, but it makes the code 
+@ cleaner at the system call and it saves a little code at the 
+@ function level.
 SVC_Handler:
 
 	@ bkpt #0
@@ -38,18 +43,25 @@ SVC_Handler:
 	mrseq	r0,msp		@ Main stack
 	mrsne	r0,psp		@ Process/Thread Stack
 
-	ldr	r1,[r0,#24]	@ Get the stacked PC
-	ldrb	r1,[r1,#-2]	@ Extract the svc call number
+	@ Now that we have a copy of the original 
+	@ stack pointer we can put more things on the stack.
+	push { r4, lr }
+	
+	mov r4, r0 @ We'll over-write R0, so stash it in r4.
+	
+	ldr  r1, [r0,#24]	@ Get the stacked PC
+	ldrb r1, [r1,#-2]	@ Extract the svc call number
 
 	@ Range Checking goes here.
 	@ That is, assuming that you don't trust yourself...
 	
 	ldr  r2,=syscall_table 
-	ldr  r2, [r2, r1, LSL #2]
+	ldr  r12, [r2, r1, LSL #2]
 
-	mov pc,r2
-	
-	@ No more code...  We've already jumped.
+	ldm r4, { r0-r3 }
+	blx r12
+	str r0, [ r4, # 0 ]
+	pop { r4, pc }
 
 	.align 1
 
