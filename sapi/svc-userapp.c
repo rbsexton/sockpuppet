@@ -7,26 +7,15 @@
 /// Launching a user-space app by the book requires that we 
 /// trigger PendSV and alter the stack.
 ///
-/// Different platforms use different library calls to set that up.
-/// These are all declared void because they return by modifying
-/// the return stack.
-///
-/// Note that the official list/ordinality of syscalls is defined by svc.S
+/// This one is pretty simple.   Just put an address into 
+/// app_start_address and trigger PendSV.    This could 
+/// be wrapped into a system call if the app needs to self-restart
 //
-// Copyright(C) 2011-2014 Robert Sexton
+// Copyright(C) 2011-2016 Robert Sexton
 //
-//
-// Change History.
-// API Version 0203.  Add a return code to StreamPutChar for back-pressure.
 #include <stdint.h>
-#include "sapi.h"
 
-uint32_t app_restart_requested = 0;
-
-/// @brief SVC 5: Springboard over to the user app launch code.
-void __SAPI_10_LauchUserApp(uint32_t *frame) {
-	launchuserapp(frame);
-	}
+uint32_t app_start_address = 0;
 
 /// This is the last thing that happens.   Call a hooked user function,
 /// and afterwards, check to see if  userapp_address is non-zero.
@@ -39,7 +28,7 @@ void PendSVHandler() {
 
   // Look for the hook from the SVC that indicates we need to load up the 
   // user app and refresh its stack.
-  if ( app_restart_requested ) {
+  if ( app_start_address ) {
 
     // This is a potential gotcha here.  If we're called via the MSP,
     // we need to unwind.   If called from PSP, thats not needed.
@@ -62,9 +51,9 @@ void PendSVHandler() {
 	  	"mov   r0, 0x01000000 @ XPSR Thumb mode\n"
         "str   r0, [r1, #28] @ Into the stack\n"
 
-          : : [base] "r" (&app_restart_requested) : "r0", "r1" );
+          : : [base] "r" (&app_start_address) : "r0", "r1" );
 
-    app_restart_requested = 0;
+    app_start_address = 0;
   }
 }
 
