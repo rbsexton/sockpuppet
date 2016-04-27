@@ -15,7 +15,18 @@
 //
 #include <stdint.h>
 
+#include "efm32lg990f256.h"
+
+#include "core_cm3.h"
+
 uint32_t app_start_address = 0;
+
+void LaunchApp(uint32_t address) {
+	app_start_address = address;
+	
+	NVIC_SetPendingIRQ(PendSV_IRQn);	
+	}
+
 
 /// This is the last thing that happens.   Call a hooked user function,
 /// and afterwards, check to see if  userapp_address is non-zero.
