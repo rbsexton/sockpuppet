@@ -34,6 +34,14 @@ __SAPI_RFU:
 @ since all system calls don't need it, but it makes the code 
 @ cleaner at the system call and it saves a little code at the 
 @ function level.
+@
+@ It might appear on first inspection that you don't have to pull
+@ the registers from the stack.   Thats true in most conditions.
+@ Its very not true in one case:  Tail-chaining by the NVIC.  If the 
+@ SVC handler tail-chains after another exception running at the same 
+@ pre-emption priority level, R0-R3 & R12 will no longer be valid.
+@ the only safe place to get the pushed registers under all circumstances
+@ is the stack.   
 SVC_Handler:
 
 	@ bkpt #0
