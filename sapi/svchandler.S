@@ -156,12 +156,15 @@ syscall_table:
 
 	@ These two are optional but likely to be useful.
 
-	@ R0 - Number of ticks (optional)
+	@ R0 - Number of ticks (optional), or zero for the default.
 	.word	__SAPI_14_PetWatchdog	 
 	.extern	__SAPI_14_PetWatchdog	
 
 	@ Returns
-	@ 32-bit Milliseconds.
+	@ 32-bit Milliseconds
+	@ R0 =  0 Return the Current 32-bit value.
+	@ R1 =  1 Return the address of the current value.
+	@ R2 = -1 Return the 64-Bit value.
 	.word   __SAPI_15_GetTimeMS     @ SVC 15/ticks
 	.extern __SAPI_15_GetTimeMS
 
