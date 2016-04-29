@@ -27,11 +27,10 @@ void LaunchApp(uint32_t address) {
 	NVIC_SetPendingIRQ(PendSV_IRQn);	
 	}
 
-
 /// This is the last thing that happens.   Call a hooked user function,
 /// and afterwards, check to see if  userapp_address is non-zero.
 /// if its non-zero, do the required stack manipulation to launch forth.
-void PendSVHandler() {
+void PendSV_Handler() {
 
 #ifdef UserPendSVHook 
 	UserPendSVHook();
