@@ -97,6 +97,7 @@ syscall_table:
 	@ Single Character Write
 	@ R0 - Stream #
 	@ R1 - The Character.
+	@ R2 - The address of the caller's tcb if blocking is requested, or zero.
 	@
 	@ Returns:
 	@ >0 - Success/Room for more.
@@ -108,6 +109,7 @@ syscall_table:
 
 	@ Single character read
 	@ R0 - Stream #
+	@ R1 - The address of the caller's tcb if blocking is requested, or zero.
 	@
 	@ Returns
 	@ >0 - the Character
@@ -130,6 +132,7 @@ syscall_table:
 	@ R0 - Stream #
 	@ R1 - Number of Characters
 	@ R2 - Pointer to the data
+	@ R3 - The address of the caller's tcb if blocking is requested, or zero.
 	@ Returns - Number of characters written.
 	.word	__SAPI_05_PutString     @ SVC 5/type	 
 	.extern	__SAPI_05_PutString     @ SVC 5
