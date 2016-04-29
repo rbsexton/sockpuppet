@@ -21,6 +21,26 @@ system calls which in this case are written in C.
 
 System Call Parameters/Return codes are documented in svchandler.S
 
+In order to startup the client application, you will need to use the supplied
+pendsv handler.  It'll construct a stack frame that unrolls from exception mode and
+starts the client.
+
+-----------------------------------------------------------------
+Blocking IO.
+If the scheduler supports it, blocking IO is very efficient.  The 
+system call takes a task control block pointer as an argument.  If the 
+call needs to block, the system call then puts the task to sleep
+by clearing bit 0 of the task's status byte, and saves the pointer 
+to use when a wake event happens.  When the wake event happens,
+the supervisor sets bit zero of the status word to 1.
+
+While the task could put itself to sleep, that creates a hazard - 
+the task could put itself to sleep immediately after a wake-triggering
+exception.
+
+This is predicated upon the use of a thread scheduler with integrated
+WFI.  A sample is available.
+
 -----------------------------------------------------------------
 Implementation Levels.   As the implementation complexity level goes
 up, more things are possible.  To reduce power, use the WFI instruction
@@ -28,7 +48,7 @@ whenever possible to power down the CPU until something interesting happens.
 
 !!!!!!!!!!!!!!!!!!  Important !!!!!!!!!!!!!!!!!!!!!
 System calls can't block.  The SAPI is designed to support the needs
-of a client application that provides it's own 
+of a client application that provides it's own mechanism for blocking.
 
 
 Level 0 - Getchar, Putchar, CharsAvailable.  No Device interrupts.
@@ -48,13 +68,5 @@ memory addresses or parameters to forth.  It defines a simple data structure
 that dylink.fth parses to create CONSTANTS at runtime or update the contents of VALUES.
 
 The GetRuntimeData syscall returns this value when called with an argument of zero.
-
-
-
-
-
-
-
-
 
 
