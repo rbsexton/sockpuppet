@@ -48,7 +48,7 @@ void PendSV_Handler() {
 
     __asm(
 	  "TST 	LR,#0x04       @ Check to see which stack\n"
-	  "ite     eq          \n"
+	  "it     eq          \n"
 	  "addeq   sp, #32     @ Discard the supervisor stack frame\n"
 
 	  "orr   lr, lr, #4    @ Force Return into thread mode from PSP\n"
