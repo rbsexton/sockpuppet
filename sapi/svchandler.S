@@ -11,14 +11,22 @@
 @ basically implementation defined.  More below.
 @ This ABI was designed to support forth's character IO primitives.
 
+@ Version History
+@ 2.01.00 - Add CPUUsage and clarify behavior of unsupported calls.
+@ 2.00.00 - Initial Release.
 #include "sapiopts.h"
 
 .text
 .syntax unified
 
-.thumb_func @ Set the thumb bit in the linker.  
+.thumb_func @ Set the thumb bit in the linker. 
+@ Version coding: 0xMMIIPP
+@ Major 
+@ Minor Release / Feature Change
+@ Patchlevel 
 __SAPI_00_ABIVersion:
-	mov r1, #0x400
+	mov r1,  #0x0100
+	movt r1, #0x0002
 	str r1, [r0, #0]
 	bx lr  
 
@@ -79,13 +87,15 @@ SVC_Handler:
 // ------------------------------------------------------------
 
 syscall_table:
-	@ Required
+	@ ------------------ Mandatory -----------------
 	.word	__SAPI_00_ABIVersion		@ SVC 0
-	  
+
+	@ ------------------ Core -----------------
 	@ This is the main syscall for runtime linking - symbolic lists, 
 	@ jump tables, etc.
 	@ R0 = 0 - Return a pointer to a symbol table.
 	@ R0 = 1 - Return a pointer to a bare jump table.
+	@ Unsupported/Stubbed - return 0
 	.word	__SAPI_01_GetRuntimeData	@ SVC 1  - 
 	.extern __SAPI_01_GetRuntimeData	- 
 
@@ -93,7 +103,9 @@ syscall_table:
 	@ app will not succeed.  In the model where threading/tasking
 	@ is a user space thing, the task in question must re-try any failing
 	@ or partial IO operations.  That allows the thread to yield and try again.
-	@
+
+
+	@ ------------------ Core -----------------
 	@ Single Character Write
 	@ R0 - Stream #
 	@ R1 - The Character.
@@ -107,17 +119,19 @@ syscall_table:
 	.word	__SAPI_02_PutChar		@ SVC 2/emit
 	.extern __SAPI_02_PutChar
 
+	@ ------------------ Core -----------------
 	@ Single character read
 	@ R0 - Stream #
 	@ R1 - The address of the caller's tcb if blocking is requested, or zero.
 	@
 	@ Returns
-	@ >0 - the Character
-	@ -1 for failure
+	@ >= 0 - the Character
+	@   -1 - failure/nothing
 	@
 	.word	__SAPI_03_GetChar		@ SVC 3/key
 	.extern	__SAPI_03_GetChar
 
+	@ ------------------ Core -----------------
 	@ Input buffer queue check.
 	@ R0 - Stream #
 	@
@@ -126,23 +140,31 @@ syscall_table:
 	.word	__SAPI_04_GetCharAvail	@ SVC 4/key?
 	.extern	__SAPI_04_GetCharAvail
 
-	@ Optional - These can improve performance.
-	
+
+	@ --------------------------------------------------
+	@ Bulk Character IO - These can improve performance.
+	@ but require a higher level of integration.
+	@ --------------------------------------------------
+
+	@ ------------------ Enhanced -----------------	
 	@ Put a block of characters.  TYPE.
 	@ R0 - Stream #
 	@ R1 - Number of Characters
 	@ R2 - Pointer to the data
 	@ R3 - The address of the caller's tcb if blocking is requested, or zero.
 	@ Returns - Number of characters written.
+	@ Unsupported/Stub behavior - Fault/Spin/Trap
 	.word	__SAPI_05_PutString     @ SVC 5/type	 
 	.extern	__SAPI_05_PutString     @ SVC 5
 
+	@ ------------------ Enhanced -----------------	
 	@ Send a newline or whatever corresponds to it.
 	@ R0 - Stream #
 	@ Returns
 	@  0: Success
 	@ -1: Failure
 	@ Returns -1 for failure.
+	@ Unsupported/Stub behavior - Fault/Spin/Trap
 	.word	__SAPI_06_EOL			@ SVC 6/cr	 
 	.extern	__SAPI_06_EOL
 
@@ -152,19 +174,34 @@ syscall_table:
 	.word	__SAPI_RFU @ 10
 	.word	__SAPI_RFU @ 11
 	.word	__SAPI_RFU @ 12
-	.word	__SAPI_RFU @ 13
 
-	@ These two are optional but likely to be useful.
 
+	@ ------------------ Enhanced -----------------	
+	@ The most basic tool for reducing power consumption is to 
+	@ clock gate the CPU when there is no work.  The simplest
+	@ mechanism for measuring this is a free-running counter
+	@ clock-gated by WFI, with an ISR that measures the ticks
+	@ of the timer per wall clock unit of time.  
+	@
+	@ No arguments.
+	@ Returns a platform-specific measure of CPU utilization.
+	@ Unsupported/Stub behavior - Return 0
+	.word	__SAPI_13_CPUUsage	 
+	.extern	__SAPI_13_CPUUsage	
+
+	@ ------------------ Enhanced -----------------	
 	@ R0 - Number of ticks (optional), or zero for the default.
+	@ Unsupported/Stub behavior - No Action
 	.word	__SAPI_14_PetWatchdog	 
 	.extern	__SAPI_14_PetWatchdog	
 
+	@ ------------------ Enhanced -----------------	
 	@ Returns
 	@ 32-bit Milliseconds
 	@ R0 =  0 Return the Current 32-bit value.
 	@ R1 =  1 Return the address of the current value.
 	@ R2 = -1 Return the 64-Bit value.
+	@ Unsupported/Stub behavior - Return 0
 	.word   __SAPI_15_GetTimeMS     @ SVC 15/ticks
 	.extern __SAPI_15_GetTimeMS
 
