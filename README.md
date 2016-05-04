@@ -10,7 +10,8 @@ Files are supplied for use with MPE Forth (http://www.mpeforth.com).
 This moves all SOC initialization into the C layer, and allows
 you to use existing C code for these things, as well as writing
 interrupt handlers in C.   Interrupt handlers can trigger Forth 
-threads in a traditional top half/bottom half arrangement.
+threads in a traditional top half/bottom half arrangement.  This is all
+discussed in more detail in Architecture.txt
 
 Support for other languages is be possible.  The assumption is
 that main() or it's equivalent can be substitited as need be. Python comes to mind.
