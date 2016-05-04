@@ -12,8 +12,11 @@ you to use existing C code for these things, as well as writing
 interrupt handlers in C.   Interrupt handlers can trigger Forth 
 threads in a traditional top half/bottom half arrangement.
 
-Support for other languages should be possible.  The assumption is
-that main() or it's equivalent can be substitited as need be.
+Support for other languages is be possible.  The assumption is
+that main() or it's equivalent can be substitited as need be. Python comes to mind.
+The only requirement is that the client binary be at a known location in Flash
+and the first two words are the initial stack pointer and program counter
+- in other words, a Cortex-M binary with only the first two vectors.
 
 Currently supported SOCs include Cortex-M3s from TI (Stellaris) and
 the ST Micro STM32L family.   Its extensible.
