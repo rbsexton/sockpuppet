@@ -19,19 +19,23 @@
 
 #include "core_cm3.h"
 
-uint32_t app_start_address = 0;
+volatile uint32_t app_start_address = 0;
 
 void LaunchApp(uint32_t address) {
 	app_start_address = address;
 	
-	NVIC_SetPendingIRQ(PendSV_IRQn);	
+	SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
+	
+	// If your read the CMSIS Docs, you might be foolish enough to think
+	// that this works:  NVIC_SetPendingIRQ(PendSV_IRQn);
+	// It doesn't.  Shame on Arm for not documenting this.		
 	}
 
 /// This is the last thing that happens.   Call a hooked user function,
 /// and afterwards, check to see if  userapp_address is non-zero.
 /// if its non-zero, do the required stack manipulation to launch forth.
 /// Don't forget that this must be the lowest priority handler in the system.
-/// It cannot share a pre-emption priroty level with anthing else.
+/// It cannot share a pre-emption priority level with anthing else.
 void PendSV_Handler() {
 
 #ifdef UserPendSVHook 
