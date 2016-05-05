@@ -26,6 +26,20 @@ pendsv handler.  It'll construct a stack frame that unrolls from exception mode 
 starts the client.
 
 -----------------------------------------------------------------
+Power Reduction.
+
+The most basic thing is to issue a WFI.  Levels of complexity:
+
+No Multitasker - have KEY issue a WFI if no input before trying again.
+Multitasker without integrated WFI
+ Create a task that does wfi, pause forever and add it to the task list.
+ see cm3forthtools/idlewfi for an example.
+Multitasker with integrated WFI
+ Idle task must STOP themselves.  The multitasker will issue the WFI
+ when there are no runnable tasks.   This is the best performing solution,
+ but the most complex to implement.
+
+-----------------------------------------------------------------
 Blocking IO.
 If the scheduler supports it, blocking IO is very efficient.  The 
 system call takes a task control block pointer as an argument.  If the 
