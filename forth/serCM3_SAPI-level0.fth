@@ -60,8 +60,17 @@ target
 
 : (sercr)	\ base --
 \ *G Transmit a CR/LF pair on the given UART.
-  $0D over (seremit)  $0A swap (seremit)
-;
+\ Wrapped version, just like (seremit)
+	begin 
+	dup (sercrfc) dup 0= \ base ret t/f
+[ tasking? ] [if]
+	IF PAUSE THEN
+[else]
+	IF [asm wfi asm] THEN
+[then] \ base ret 
+    until
+    drop
+	;
 
 : (serkey) \ base -- c
 \ *G Get a character from the port.  Retry until we get it.

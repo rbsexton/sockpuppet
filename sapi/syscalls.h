@@ -11,7 +11,7 @@ int __SAPI_02_PutChar(int stream, uint8_t c, unsigned long *tcb);
 int __SAPI_03_GetChar(int stream,unsigned long *tcb);
 int __SAPI_04_GetCharAvail(int stream);
 int __SAPI_05_PutString(int stream, uint8_t *p, int count, unsigned long *tcb);
-int __SAPI_06_EOL(int stream);
+int __SAPI_06_EOL(int stream, unsigned long *tcb);
 unsigned __SAPI_13_CPUUsage();
 void __SAPI_14_PetWatchdog(unsigned howmuch);
 unsigned __SAPI_15_GetTimeMS(int whatform);

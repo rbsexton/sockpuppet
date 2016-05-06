@@ -12,6 +12,8 @@
 @ This ABI was designed to support forth's character IO primitives.
 
 @ Version History
+@ 2.02.01 - Change return code of EOL.
+@ 2.02.00 - Add WakeRequest
 @ 2.01.00 - Add CPUUsage and clarify behavior of unsupported calls.
 @ 2.00.00 - Initial Release.
 #include "sapiopts.h"
@@ -25,8 +27,7 @@
 @ Minor Release / Feature Change
 @ Patchlevel 
 __SAPI_00_ABIVersion:
-	mov r1,  #0x0100
-	movt r1, #0x0002
+	ldr r1,  =0x00020101
 	str r1, [r0, #0]
 	bx lr  
 
@@ -160,10 +161,10 @@ syscall_table:
 	@ ------------------ Enhanced -----------------	
 	@ Send a newline or whatever corresponds to it.
 	@ R0 - Stream #
+	@ R1 - The address of the caller's tcb if blocking is requested, or zero.
 	@ Returns
-	@  0: Success
-	@ -1: Failure
-	@ Returns -1 for failure.
+	@  1: Success
+	@  0: Failure
 	@ Unsupported/Stub behavior - Fault/Spin/Trap
 	.word	__SAPI_06_EOL			@ SVC 6/cr	 
 	.extern	__SAPI_06_EOL
@@ -173,9 +174,24 @@ syscall_table:
 	.word	__SAPI_RFU @ 9
 	.word	__SAPI_RFU @ 10
 	.word	__SAPI_RFU @ 11
-	.word	__SAPI_RFU @ 12
 
-
+	@ ------------------ Enhanced -----------------	
+	@ A mechanism so that a user task can request a 
+	@ wake in response to a specific event.  This
+	@ call takes an address and a mask.  When the
+	@ event happens, the supervisor will set the mask
+	@ into the address.   Note that unlike the IO calls, 
+	@ this one takes the address of the task status word.
+	@ One use case scenario is periodic timers.
+	@
+	@ Arguments
+	@ R0 - Wake Source - Implementation defined.
+	@ R1 - Memory address
+	@ R2 - Mask to set, or zero to disable the request.
+	@ Returns the previous value.
+	.word	__SAPI_12_SetWakeRequest @ 12
+	.extern	__SAPI_12_SetWakeRequest 
+	
 	@ ------------------ Enhanced -----------------	
 	@ The most basic tool for reducing power consumption is to 
 	@ clock gate the CPU when there is no work.  The simplest
