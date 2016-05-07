@@ -51,11 +51,19 @@ target
     2drop
 	;
 
-: (sertype)	\ caddr len base --
+: (sertype) \ caddr len base --
 \ *G Transmit a string on the given UART.
-  -rot bounds
-  ?do  i c@ over (seremit)  loop
-  drop
+\ * The system call wants     base len caddr
+	>R  \ We'll use this a few times.
+	begin 
+	2dup R@ (sertypefc)  dup \ caddr len ret ret
+	IF 
+	  [ tasking? ] [if] PAUSE [else] [asm wfi asm] [then]
+	  dup >R - swap R> + swap \ Advance the caddr len pair
+	THEN 
+	0= until
+	2drop 
+	R> drop 
 ;
 
 : (sercr)	\ base --

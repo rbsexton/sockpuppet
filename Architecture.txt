@@ -41,6 +41,7 @@ Multitasker with integrated WFI
 
 -----------------------------------------------------------------
 Blocking IO.
+
 If the scheduler supports it, blocking IO is very efficient.  The 
 system call takes a task control block pointer as an argument.  If the 
 call needs to block, the system call then puts the task to sleep
@@ -54,6 +55,13 @@ exception.
 
 This is predicated upon the use of a thread scheduler with integrated
 WFI.  A sample is available.
+
+The blocking calls can be used in partially-implemented systems -
+Define SAPIWakeSupport? in for the system call words to pass UP to the system calls.
+Leave it undefined to pass in 0, disabling wake events.
+
+The supervisor calls can also ignore the supplied TCB, in which case the system
+call words will just spin through PAUSE or WFI until something unblocks.
 
 -----------------------------------------------------------------
 Implementation Levels.   As the implementation complexity level goes
