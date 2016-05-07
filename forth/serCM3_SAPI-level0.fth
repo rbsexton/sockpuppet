@@ -42,11 +42,7 @@ target
 \ The only interesting thing is failure, or -1.  That means retry.
 	begin 
 	2dup (seremitfc) dup 0 < \ char base ret t/f
-[ tasking? ] [if]
-	IF PAUSE THEN
-[else]
-	IF [asm wfi asm] THEN
-[then] \ char base ret 
+	IF [ tasking? ] [if] PAUSE [else] [asm wfi asm] [then] THEN \ char base ret 
     0 >= until
     2drop
 	;
@@ -71,11 +67,7 @@ target
 \ Wrapped version, just like (seremit)
 	begin 
 	dup (sercrfc) dup 0= \ base ret t/f
-[ tasking? ] [if]
-	IF PAUSE THEN
-[else]
-	IF [asm wfi asm] THEN
-[then] \ base ret 
+    IF [ tasking? ] [if] PAUSE [else] [asm wfi asm] [then] THEN \ base ret 
     until
     drop
 	;
@@ -85,12 +77,10 @@ target
 \ See if its negative.  If so, discard it and leave false to re-loop.
 \ If not negative, leave true on the stack to exit.
     begin \ base ret t/f 
-	dup (serkeyfc) dup 0 <  \ base ret t/f   
-	[ tasking? ] [if]
-		IF PAUSE drop false ELSE true THEN
-	[else]
-		IF [asm wfi asm] drop false ELSE true THEN
-	[then] \ base ret 
+	dup (serkeyfc) dup 0 <  \ base ret t/f 
+	 IF [ tasking? ] [if] PAUSE [else] [asm wfi asm] [then] drop false 
+	 ELSE true 
+	 THEN \ base ret t/f 
 	until  \ base ret 
 	swap drop 
 ;
