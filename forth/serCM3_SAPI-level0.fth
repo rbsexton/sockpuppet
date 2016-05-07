@@ -50,14 +50,16 @@ target
 : (sertype) \ caddr len base --
 \ *G Transmit a string on the given UART.
 \ * The system call wants     base len caddr
+\ * and it returns the number of characters sent.
 	>R  \ We'll use this a few times.
 	begin 
-	2dup R@ (sertypefc)  dup \ caddr len ret ret
-	IF 
+	2dup R@ (sertypefc)  dup >R \ caddr len ret
+	- dup IF \ If there are still characters left  
 	  [ tasking? ] [if] PAUSE [else] [asm wfi asm] [then]
-	  dup >R - swap R> + swap \ Advance the caddr len pair
+	  swap R> + swap \ finish advancing the caddr len pair
+	ELSE R> drop 
 	THEN 
-	0= until
+	dup 0= until \ Do this until nothing is left.
 	2drop 
 	R> drop 
 ;
