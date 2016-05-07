@@ -2,6 +2,7 @@
 /// @file lm3s-userapp.c
 /// @brief Launch Code and PendSV handler for starting up forth, plus system reset.
 /// Code to setup PendSV varies by platform/library.
+/// Copyright(C) 2016 Robert Sexton
 
 #include <stdint.h>
 #include <stdbool.h>

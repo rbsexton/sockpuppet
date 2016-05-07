@@ -1,5 +1,6 @@
 /// \file sapi.h
 /// \brief Required headers for compilation.
+/// Copyright(C) 2016 Robert Sexton
 
 #ifndef __STDINT_H__
 #include <stdint.h>

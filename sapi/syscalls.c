@@ -13,7 +13,7 @@
 ///
 /// Note that the official list/ordinality of syscalls is defined by svc.S
 //
-// Copyright(C) 2011-2013 Robert Sexton
+// Copyright(C) 2011-2016 Robert Sexton
 //
 //
 // Change History.
