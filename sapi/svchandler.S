@@ -81,6 +81,7 @@ SVC_Handler:
 	ldm r4, { r0-r3 }
 	blx r12
 	str r0, [ r4, # 0 ]
+	str r1, [ r4, # 4 ] @ Top half of a 64-bit return.
 	pop { r4, pc }
 
 	.align 1
