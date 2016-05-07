@@ -1,6 +1,7 @@
 // Function Prototypes for SAPI Calls.
 // This serves as a basic check for supplied supervisor functions.
-// Copyright(C) 2016 Robert Sexton
+// Copyright (C) 2016, Robert Sexton.  All rights reserved.
+// Covered by the terms of the supplied Licence.txt file
 
 // Applies to SAPI ABI 2.1
 

@@ -3,7 +3,8 @@
 /// \defgroup SAPI Sockpuppet 
 /// 
 //
-// Copyright(C) 2011-2014 Robert Sexton
+// Copyright (C) 2011-2014, Robert Sexton.  All rights reserved.
+// Covered by the terms of the supplied Licence.txt file
 //
 // Change History.
 // API Version 0203.  Add a return code to StreamPutChar for back-pressure.

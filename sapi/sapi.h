@@ -1,6 +1,7 @@
 /// \file sapi.h
 /// \brief Required headers for compilation.
-/// Copyright(C) 2016 Robert Sexton
+// Copyright (c) 2016, Robert Sexton.  All rights reserved.
+// Covered by the terms of the supplied Licence.txt file
 
 #ifndef __STDINT_H__
 #include <stdint.h>

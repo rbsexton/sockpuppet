@@ -4,6 +4,10 @@
 // Hacked up for use with the Sockpuppet machine layer.
 // Primarily, no interrupt handlers.
 //
+
+// Copyright (c) 2011-2016, Robert Sexton.  All rights reserved.
+// Covered by the terms of the supplied Licence.txt file
+
 //*****************************************************************************
 void ResetISR(void);
 

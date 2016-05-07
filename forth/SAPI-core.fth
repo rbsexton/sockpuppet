@@ -8,6 +8,10 @@
 \ Note that the system call number is embedded into the instruction,
 \ so this is not so easily parameterized.
 
+\ Copyright (c) 2011-2016, Robert Sexton.  All rights reserved.
+\ Covered by the terms of the supplied Licence.txt file
+
+
 #0 equ SAPI_VEC_VERSION
 #1 equ SAPI_VEC_VARS
 #2 equ SAPI_VEC_PUTCHAR

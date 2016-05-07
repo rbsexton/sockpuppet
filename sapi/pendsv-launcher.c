@@ -12,6 +12,8 @@
 /// be wrapped into a system call if the app needs to self-restart
 //
 // Copyright(C) 2011-2016 Robert Sexton
+// Covered by the terms of the supplied Licence.txt file
+
 //
 #include <stdint.h>
 

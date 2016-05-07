@@ -1,6 +1,9 @@
 ///
 /// @file sapi.c
 /// @brief Sockpuppet api library for testing with C
+ 
+// Copyright (c) 2011-2016, Robert Sexton.  All rights reserved.
+// Covered by the terms of the supplied Licence.txt file
 
 #include "sapi.h"
 

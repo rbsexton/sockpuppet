@@ -7,6 +7,10 @@
 \ that is already defined, assume its a VALUE
 \ otherwise, generate a constant.
 
+\ Copyright (c) 2011-2016, Robert Sexton.  All rights reserved.
+\ Covered by the terms of the supplied Licence.txt file
+
+
 \ Walk the table and make the constants.
 : dy-populate
   dy-first 

@@ -11,8 +11,9 @@
 @ basically implementation defined.  More below.
 @ This ABI was designed to support forth's character IO primitives.
 @
-@ Copyright(C) 2016 Robert Sexton
-@ 
+@ Copyright (C) 2016, Robert Sexton.  All rights reserved.
+@ Covered by the terms of the supplied Licence.txt file
+
 
 @ Version History
 @ 2.02.01 - Change return code of EOL.

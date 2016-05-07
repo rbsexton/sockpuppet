@@ -13,8 +13,8 @@
 ///
 /// Note that the official list/ordinality of syscalls is defined by svc.S
 //
-// Copyright(C) 2011-2016 Robert Sexton
-//
+// Copyright (C) 2011-2016, Robert Sexton.  All rights reserved.
+// Covered by the terms of the supplied Licence.txt file
 //
 // Change History.
 // API Version 0203.  Add a return code to StreamPutChar for back-pressure.

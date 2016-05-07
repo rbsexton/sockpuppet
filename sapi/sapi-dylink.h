@@ -1,6 +1,9 @@
 /// @file sapi-dylink.h
 /// @brief Define the record used for runtime linking.
 
+// Copyright (c) 2011-2016, Robert Sexton.  All rights reserved.
+// Covered by the terms of the supplied Licence.txt file
+
 #ifndef __STDINT_H__
 #include <stdint.h>
 #endif

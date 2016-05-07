@@ -5,6 +5,9 @@
 \ The SAPI is a system call interace, so there is no blocking.
 \ KEY requires blocking, so that must be implemented here.
 
+\ Copyright (c) 2016, Robert Sexton.  All rights reserved.
+\ Covered by the terms of the supplied Licence.txt file
+
 only forth definitions
 
 \ ==============

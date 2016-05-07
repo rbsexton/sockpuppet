@@ -4,6 +4,10 @@
 \ 2 - Its always on.
 \ 3 - Its read-only. (subject to change)
 
+\ Copyright (c) 2011-2016, Robert Sexton.  All rights reserved.
+\ Covered by the terms of the supplied Licence.txt file
+
+
 ((
 
 Derived from the LPC17xx code.

@@ -5,7 +5,8 @@
 //! @{
 /// 
 // Copyright(C) 2011-2014 Robert Sexton
-//
+// Covered by the terms of the supplied Licence.txt file
+
 // The SAPI Chario layer is a dispacher.   Here are the low-level UART functions.
 // This driver layer implements software flow control via XON/XOFF
 //

@@ -4,6 +4,10 @@
 // 
 // Bare bones client for testing.
 // 
+
+// Copyright (c) 2011-2016, Robert Sexton.  All rights reserved.
+// Covered by the terms of the supplied Licence.txt file
+
 //*****************************************************************************
 #include <stdint.h>
 #include <string.h>

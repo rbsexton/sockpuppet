@@ -1,6 +1,9 @@
 \ serCM3_sapi_p.fth - SAPI polled RX, polled TX, serial communication drivers
 \ Written to run against the SockPuppet API.
 
+\ Copyright (c) 2011-2016, Robert Sexton.  All rights reserved.
+\ Covered by the terms of the supplied Licence.txt file
+
 ((
 Adapted from: the LPC polled driver.
 ))
