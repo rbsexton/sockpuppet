@@ -31,8 +31,7 @@
 @ Minor Release / Feature Change
 @ Patchlevel 
 __SAPI_00_ABIVersion:
-	ldr r1,  =0x00020101
-	str r1, [r0, #0]
+	ldr r0,  =0x00020101
 	bx lr  
 
 @ Hang out and wait for debugger help.
