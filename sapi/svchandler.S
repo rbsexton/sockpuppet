@@ -80,8 +80,7 @@ SVC_Handler:
 
 	ldm r4, { r0-r3 }
 	blx r12
-	str r0, [ r4, # 0 ]
-	str r1, [ r4, # 4 ] @ Top half of a 64-bit return.
+	stm r4, { r0-r1 } @ Support 64-bit return vals.
 	pop { r4, pc }
 
 	.align 1
