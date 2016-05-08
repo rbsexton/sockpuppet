@@ -28,7 +28,7 @@ decimal
 \ *G Waits for n milliseconds.
   ticks +
   begin
-[ tasking? ] [if] pause [else] wfi [then]
+[ tasking? ] [if] pause [else] [asm wfi asm] [then]
     dup ticks - 0<
   until
   drop

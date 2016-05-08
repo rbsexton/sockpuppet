@@ -14,7 +14,7 @@ threads in a traditional top half/bottom half arrangement.  This is all
 discussed in more detail in Architecture.txt
 
 Support for other languages is be possible.  The assumption is
-that main() or it's equivalent can be substitited as need be. Python comes to mind.
+that main() or it's equivalent can be substituted as need be. Python comes to mind.
 The only requirement is that the client binary be at a known location in Flash
 and the first two words are the initial stack pointer and program counter.  
 Just a Cortex-M binary with only the first two vectors.

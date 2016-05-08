@@ -2,7 +2,7 @@ Dynamic/Runtime Linking between Forth and C
 
 The SAPI API defines a system call that returns the address of the 
 dynamic linking list.  Forth or any other language can traverse the
-list to find out the adresses of interest. 
+list to find out the addresses of interest. 
 
 See sapi-dylink.h for structure definitions and declarations, and
 dylink-example.c for a sample data file.
