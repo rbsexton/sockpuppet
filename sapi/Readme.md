@@ -6,34 +6,13 @@ you may have to re-compile with different addresses.
 ----------------------
 Contents
 
-Notes - Implementation Notes.
+- svchandler.S : SVC Exception handler that makes this all go.
+- syscalls.h : Declarations for the C functions that underly the system calls.
+- pendsv-launcher.c : The PendSV handler that launches the client application by manipulating the exception stack.
+- sapi-dylink.c : Sample Runtime linking declation file
+- sapi-dylink.h : Definitions for runtime linking
+- sample_client: A sample SAPI client written in C.   Built for Stellaris, should run on any Cortex-M.
 
-------
-Things for Building a sample application to run under SAPI on a LM3S6965:
-Makefile 
-
-app.ld app_crt0.c app_main.c app-api.c - Application sample code.
-
-sapi.h - Required header for complilation.
-
-------
-sapi-dylink.h - Dynamic Linking Definitions 
-
-------
-Bits for adding SAPI support to a C environment host:
-
-ringbuffer.c ringbuffer.h - Ringbuffer routines for use by SAPI.
-
-svchandler.S - Call Dispatch Table
-svc-core.s - Core SAPI calls
-svc-chario.c - Character IO call layer.  Invokes platform-specific code.
-svc-userapp.c - Launch the thread-mode app via the PendSV mechanism.
-svc-stubs.c - Defined but not yet implemented.
-svc-privs.c - Getting in and out of privileged modes, MPU support
-
------- Target-Specific code for TI Stellaris/Tiva Cortexes
-lm3s-uart.c - Target specific uart code.
-lm3s-userapp.c - Getting the part into PendSV 
-
-------
-lm3s-testbed - Source files for a minimal SAPI host to run on the LM3S6965
+Plus two more somewhat obsolete sets of files:
+- lm3s-testbed : Source files for a minimal SAPI host to run on the LM3S6965
+- obsolete : Other stuff thats of historic interest.
