@@ -9,13 +9,20 @@
 @ So this is as good a place as any to define it.
 @ The tricky part is that the particulars of the ABI parameters are 
 @ basically implementation defined.  More below.
-@ This ABI was designed to support forth's character IO primitives.
+@ This ABI was initially designed to support forth's character IO primitives:
+@ getchar(), charsavail(), & putchar()
+@ later it was extended to support string puts, and end-of-line. 
+@ 
+@ These cannot be direct substitutes for the forth words in question
+@ because system calls are not allowed to block - the client
+@ application must provide that functionality.
 @
 @ Copyright (C) 2016, Robert Sexton.  All rights reserved.
 @ Covered by the terms of the supplied Licence.txt file
 
 
 @ Version History
+@ 2.03.00 - Support 64-bit return values.
 @ 2.02.01 - Change return code of EOL.
 @ 2.02.00 - Add WakeRequest
 @ 2.01.00 - Add CPUUsage and clarify behavior of unsupported calls.
@@ -31,7 +38,7 @@
 @ Minor Release / Feature Change
 @ Patchlevel 
 __SAPI_00_ABIVersion:
-	ldr r0,  =0x00020101
+	ldr r0,  =0x00020300
 	bx lr  
 
 @ Hang out and wait for debugger help.
@@ -80,14 +87,15 @@ SVC_Handler:
 
 	ldm r4, { r0-r3 }
 	blx r12
-	stm r4, { r0-r1 } @ Support 64-bit return vals.
+	stm r4, { r0-r1 } @ Support 64-bit return values.
 	pop { r4, pc }
 
 	.align 1
 
 // ------------------------------------------------------------
 // The first 16 are whats required for bootstrapping forth.
-// TYPE and CR are special.
+// TYPE and CR are special - They are included for efficiency,
+// but can be built from other primitives.
 // ------------------------------------------------------------
 
 syscall_table:
@@ -143,7 +151,6 @@ syscall_table:
 	@ R0 - The number of characters in the input queue.
 	.word	__SAPI_04_GetCharAvail	@ SVC 4/key?
 	.extern	__SAPI_04_GetCharAvail
-
 
 	@ --------------------------------------------------
 	@ Bulk Character IO - These can improve performance.
