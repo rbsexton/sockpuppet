@@ -22,8 +22,14 @@ the client binary be at a known location in memory and the first two words of of
 client application are the initial stack pointer and program counter.  This is a
 Cortex-M binary with only the first two vectors.
 
+This repo contains the files to support a reference implementation on the SiLab
+Leopard Gecko.  The SOC-specific files for that project are in another repository.
+
 Currently supported SOCs include Cortex-M3s from TI (Stellaris) and
 the ST Micro STM32L family.   Its extensible.
+
+
+
 
 Included:
 - Architecture.txt : Detailed 
