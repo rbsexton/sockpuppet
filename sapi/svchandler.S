@@ -74,6 +74,12 @@ SVC_Handler:
 	@ stack pointer we can put more things on the stack.
 	push { r4, lr }
 	
+	@ This is where you could make a copy of the stack frame pointer
+	@ for system calls that need to access it - things like panic,
+	@ reboot, etc that will pull the stacked PC, and so on.
+	@ ldr r1, =saved_frame_p
+	@ str r0, [ r1 ]
+	
 	mov r4, r0 @ We'll over-write R0, so stash it in r4.
 	
 	ldr  r1, [r0,#24]	@ Get the stacked PC
