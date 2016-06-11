@@ -96,14 +96,13 @@ SVC_Handler:
 	stm r4, { r0-r1 } @ Support 64-bit return values.
 	pop { r4, pc }
 
-	.align 4
 
 // ------------------------------------------------------------
 // The first 16 are whats required for bootstrapping forth.
 // TYPE and CR are special - They are included for efficiency,
 // but can be built from other primitives.
 // ------------------------------------------------------------
-
+.align 4
 syscall_table:
 	@ ------------------ Mandatory -----------------
 	.word	__SAPI_00_ABIVersion		@ SVC 0
