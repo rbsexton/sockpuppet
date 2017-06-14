@@ -16,6 +16,7 @@ only forth definitions
 \ *P This driver provides polled serial comms for Cortex-M3 CPUs
 \ ** using the internal UARTs via the SAPI call layer.   This is 
 \ ** The simplest implementation level.
+\ ** It doesn't use the CR or TYPE calls, but rather emulates them.
 
 \ ****************
 \ *S Configuration
@@ -52,30 +53,15 @@ target
 
 : (sertype) \ caddr len base --
 \ *G Transmit a string on the given UART.
-\ * The system call wants     base len caddr
-\ * and it returns the number of characters sent.
-	>R  \ We'll use this a few times.
-	begin 
-	2dup R@ (sertypefc)  dup >R \ caddr len ret
-	- dup IF \ If there are still characters left  
-	  [ tasking? ] [if] PAUSE [else] [asm wfi asm] [then]
-	  swap R> + swap \ finish advancing the caddr len pair
-	ELSE R> drop 
-	THEN 
-	dup 0= until \ Do this until nothing is left.
-	2drop 
-	R> drop 
+  -rot bounds
+  ?do  i c@ over (seremit)  loop
+  drop
 ;
 
 : (sercr)	\ base --
 \ *G Transmit a CR/LF pair on the given UART.
-\ Wrapped version, just like (seremit)
-	begin 
-	dup (sercrfc) dup 0= \ base ret t/f
-    IF [ tasking? ] [if] PAUSE [else] [asm wfi asm] [then] THEN \ base ret 
-    until
-    drop
-	;
+   $0D over (seremit)  $0A swap (seremit)
+;
 
 : (serkey) \ base -- c
 \ *G Get a character from the port.  Retry until we get it.
