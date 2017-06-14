@@ -22,6 +22,7 @@
 
 
 @ Version History
+@ 2.04.00 - Change return codes for putchar, type and eol for use with multitasking.
 @ 2.03.00 - Support 64-bit return values.
 @ 2.02.01 - Change return code of EOL.
 @ 2.02.00 - Add WakeRequest
@@ -38,7 +39,7 @@
 @ Minor Release / Feature Change
 @ Patchlevel 
 __SAPI_00_ABIVersion:
-	ldr r0,  =0x00020300
+	ldr r0,  =0x00020400
 	bx lr  
 
 @ Hang out and wait for debugger help.
@@ -124,9 +125,8 @@ syscall_table:
 	@ R2 - The address of the caller's tcb if blocking is requested, or zero.
 	@
 	@ Returns:
-	@ >0 - Success/Room for more.
-	@  0 - Success/Warning - The output buffer is full.
-	@ -1 - Failure - the client must retry
+	@  0 - Success/Room for more.
+	@  1 - Caller must yield/pause and wait for wake by service layer.
 	@
 	.word	__SAPI_02_PutChar		@ SVC 2/emit
 	.extern __SAPI_02_PutChar
@@ -163,7 +163,8 @@ syscall_table:
 	@ R1 - Number of Characters
 	@ R2 - Pointer to the data
 	@ R3 - The address of the caller's tcb if blocking is requested, or zero.
-	@ Returns - Number of characters written.
+	@  0 - Success/Room for more.
+	@  1 - Caller must yield/pause and wait for wake by service layer.
 	@ Unsupported/Stub behavior - Fault/Spin/Trap
 	.word	__SAPI_05_PutString     @ SVC 5/type	 
 	.extern	__SAPI_05_PutString     @ SVC 5
@@ -173,8 +174,8 @@ syscall_table:
 	@ R0 - Stream #
 	@ R1 - The address of the caller's tcb if blocking is requested, or zero.
 	@ Returns
-	@  1: Success
-	@  0: Failure
+	@  0 - Success/Room for more.
+	@  1 - Caller must yield/pause and wait for wake by service layer.
 	@ Unsupported/Stub behavior - Fault/Spin/Trap
 	.word	__SAPI_06_EOL			@ SVC 6/cr	 
 	.extern	__SAPI_06_EOL

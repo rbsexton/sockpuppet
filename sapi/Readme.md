@@ -37,3 +37,19 @@ lm3s-userapp.c - Getting the part into PendSV
 
 ------
 lm3s-testbed - Source files for a minimal SAPI host to run on the LM3S6965
+
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Change History 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+
+ABI 2.04.0 - ABI change - Purchar, EOL, and Putstring return booleans.
+ These system calls take a task control block as an argument, and will clear
+ the run bit if they need the calling task to yield/pause.   The system
+ calls will take care if the interrupt prep so that the tcbs run bit gets
+ set when the blocking condition clears.
+
+
+
+
