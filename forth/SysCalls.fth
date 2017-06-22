@@ -26,7 +26,6 @@ CODE GETRUNTIMELINKS  \ type -- n
 \ ** table with name, address pairs.  Type 1 - A Zero-Terminated Jump table.
 	mov r0, tos
 	svc # SAPI_VEC_01_GetRuntimeLinks 
-	str tos, [ psp, # -4 ] !
 	mov tos, r0
 	next,
 END-CODE
