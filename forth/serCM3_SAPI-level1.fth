@@ -44,7 +44,7 @@ target
 \ *G Wrapped call that checks for throttling, and if so,
 \ calls PAUSE to let another task run, or just does a WFI if no multitasker.
 \ The only interesting thing is failure, or -1.  That means retry.
-    (seremitfc) if pause then 
+    (seremitfc) if [ tasking? ] [if] PAUSE [else] [asm wfi asm] [then] then 
 	;
 
 : (sertype) \ caddr len base --
@@ -61,6 +61,7 @@ target
 
 : (serkey) \ base -- c
 \ *G Get a character from the port.  Retry until we get it.
+\ The system call will stop the task and restart it when there is data.
 \ See if its negative.  If so, discard it and leave false to re-loop.
 \ If not negative, leave true on the stack to exit.
     begin \ base ret t/f 
