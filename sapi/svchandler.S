@@ -91,7 +91,7 @@ SVC_Handler:
 	stm r4, { r0-r1 } @ Support 64-bit return values.
 	pop { r4, pc }
 
-	.align 1
+	.align
 
 // ------------------------------------------------------------
 // The first 16 are whats required for bootstrapping forth.
