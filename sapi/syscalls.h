@@ -9,7 +9,7 @@
 void SVC_Handler();
 
 uint32_t __SAPI_00_ABIVersion();
-long* __SAPI_01_GetRuntimeData(int which);
+void* __SAPI_01_GetRuntimeData(int which);
 bool __SAPI_02_PutChar(int stream, uint8_t c, unsigned long *tcb);
 int __SAPI_03_GetChar(int stream,unsigned long *tcb);
 int __SAPI_04_GetCharAvail(int stream);
