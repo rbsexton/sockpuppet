@@ -10,6 +10,7 @@
 #4 equ SAPI_VEC_04_GetCharAvail
 #5 equ SAPI_VEC_05_PutString
 #6 equ SAPI_VEC_06_EOL
+#12 equ SAPI_VEC_12_WakeRequest
 #14 equ SAPI_VEC_14_PetWatchdog
 #15 equ SAPI_VEC_15_GetTimeMS
 
@@ -76,7 +77,7 @@ CODE (SERCRFC) \ base -- return
 END-CODE
 
 \ --------------------------------------------
-\ Direct substitures for existing stuff.
+\ Direct substitutes for existing stuff.
 \ --------------------------------------------
 
 CODE (SERKEY?) \ base -- t/f
@@ -107,6 +108,15 @@ CODE TICKS  \ -- n
 	next,
 END-CODE
 
+CODE WAKEREQ \ event arg -- t/f  
+\ *G Request a wake of the current task.  Implementation Defined.
+	mov r1, tos	
+	ldr r0, [ psp ], # 4
+	[defined] SAPIWakeSupport? [if] mov r2, up [else] mov r2, # 0 [then] 
+	svc # SAPI_VEC_12_WakeRequest
+	mov tos, r0
+	next,
+END-CODE
 
 
 
