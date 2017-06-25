@@ -17,11 +17,12 @@
 @ because system calls are not allowed to block - the client
 @ application must provide that functionality.
 @
-@ Copyright (C) 2016, Robert Sexton.  All rights reserved.
+@ Copyright (C) 2016-2017, Robert Sexton.  All rights reserved.
 @ Covered by the terms of the supplied Licence.txt file
 
 
 @ Version History
+@ 2.05.00 - Officially define wake request
 @ 2.04.00 - Change return codes for putchar, type and eol for use with multitasking.
 @ 2.03.00 - Support 64-bit return values.
 @ 2.02.01 - Change return code of EOL.
@@ -75,7 +76,7 @@ SVC_Handler:
 	@ stack pointer we can put more things on the stack.
 	push { r4, lr }
 	
-	mov r4, r0 @ We'll over-write R0, so stash it in r4.
+	mov r4, r0 @ Use R4 for a stack pointer.  R0 has another job.
 	
 	ldr  r1, [r0,#24]	@ Get the stacked PC
 	ldrb r1, [r1,#-2]	@ Extract the svc call number
@@ -188,20 +189,17 @@ syscall_table:
 
 	@ ------------------ Enhanced -----------------	
 	@ A mechanism so that a user task can request a 
-	@ wake in response to a specific event.  This
-	@ call takes an address and a mask.  When the
-	@ event happens, the supervisor will set the mask
-	@ into the address.   Note that unlike the IO calls, 
-	@ this one takes the address of the task status word.
+	@ wake in response to a specific event.  This is an
+	@ Implementation specific thing.  Types 0-15 are reserved
 	@ One use case scenario is periodic timers.
 	@
 	@ Arguments
-	@ R0 - Wake Source - Implementation defined.
-	@ R1 - Memory address
-	@ R2 - Mask to set, or zero to disable the request.
-	@ Returns the previous value.
-	.word	__SAPI_12_SetWakeRequest @ 12
-	.extern	__SAPI_12_SetWakeRequest 
+	@ R0 - Wake Type.
+	@ R1 - Wake argument - type-specific.
+	@ R2 - TCB of the thing to wake.
+	@ Returns true for block requested.
+	.word	__SAPI_12_WakeRequest @ 12
+	.extern	__SAPI_12_WakeRequest 
 	
 	@ ------------------ Enhanced -----------------	
 	@ The most basic tool for reducing power consumption is to 
@@ -229,8 +227,8 @@ syscall_table:
 	@ R1 =  1 Return the address of the current value.
 	@ R2 = -1 Return the 64-Bit value.
 	@ Unsupported/Stub behavior - Return 0
-	.word   __SAPI_15_GetTimeMS     @ SVC 15/ticks
-	.extern __SAPI_15_GetTimeMS
+	.word   __SAPI_15_GetTime     @ SVC 15/ticks
+	.extern __SAPI_15_GetTime
 
 @ --------------------------------------------------
 @ End of reserved vectors.
