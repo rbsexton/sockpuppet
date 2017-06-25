@@ -66,8 +66,9 @@ target
 \ If not negative, leave true on the stack to exit.
     begin \ base ret t/f 
 	dup (serkeyfc) dup 0 <  \ base ret t/f 
+	 \ If we have been blocked, drop the useless returned data and try again.
 	 IF [ tasking? ] [if] PAUSE [else] [asm wfi asm] [then] drop false 
-	 ELSE true 
+	 ELSE true \ Leave the return code intact.
 	 THEN \ base ret t/f 
 	until  \ base ret 
 	swap drop 
@@ -102,13 +103,29 @@ create Console0	\ -- addr ; OUT managed by upper driver
   ' sertype0 ,		\ caddr len -- ; display string
   ' sercr0 ,		\ -- ; display new line
 
+\ --------------------------------------------------------------------
+\ Optional devices
+\ --------------------------------------------------------------------
+[defined] useUART1? [if]   useUART1? 1 = [if] 
+: seremit1 #1 (seremit)  ;
+: sertype1 #1 (sertype)  ;
+: sercr1   #1 (sercr)  ;
+: serkey?1 #1 (serkey?)  ;
+: serkey1  #1 (serkey)  ;
+create Console1 ' serkey1 , ' serkey?1 , ' seremit1 , ' sertype1 , ' sercr1 ,	
+[then]  [then]
+
+\ --------------------------------------------------------------------
 \ Non-UARTs.
+\ --------------------------------------------------------------------
+[defined] useStream10? [if]    useStream10? 1 = [if] 
 : seremit10 #10 (seremit)  ;
 : sertype10	#10 (sertype)  ;
 : sercr10	#10 (sercr)  ;
 : serkey?10	#10 (serkey?)  ;
 : serkey10	#10 (serkey)  ;
 create Console10 ' serkey10 , ' serkey?10 , ' seremit10 , ' sertype10 , ' sercr10 ,	
+[then]  [then]
 
 console-port 0 = [if]
   console0 constant console
