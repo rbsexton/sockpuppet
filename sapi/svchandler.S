@@ -76,7 +76,13 @@ SVC_Handler:
 	@ stack pointer we can put more things on the stack.
 	push { r4, lr }
 	
-	mov r4, r0 @ Use R4 for a stack pointer.  R0 has another job.
+	@ This is where you could make a copy of the stack frame pointer
+	@ for system calls that need to access it - things like panic,
+	@ reboot, etc that will pull the stacked PC, and so on.
+	@ ldr r1, =saved_frame_p
+	@ str r0, [ r1 ]
+	
+	mov r4, r0 @ We'll over-write R0, so stash it in r4.
 	
 	ldr  r1, [r0,#24]	@ Get the stacked PC
 	ldrb r1, [r1,#-2]	@ Extract the svc call number
@@ -99,7 +105,7 @@ SVC_Handler:
 // TYPE and CR are special - They are included for efficiency,
 // but can be built from other primitives.
 // ------------------------------------------------------------
-
+.align 4
 syscall_table:
 	@ ------------------ Mandatory -----------------
 	.word	__SAPI_00_ABIVersion		@ SVC 0

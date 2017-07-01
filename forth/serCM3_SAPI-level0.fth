@@ -129,9 +129,11 @@ console-port  #10 = [if]
 \ *S System initialisation
 \ ************************
 
+internal
 \ This is a NOP in the SAPI environment
 : init-ser ;	\ --
 \ *G Initialise all serial ports
+external
 
 \ ======
 \ *> ###
