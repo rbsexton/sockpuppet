@@ -25,12 +25,20 @@ only forth definitions
 
 target
 
+[defined] IOProfiling? [if]
+variable c_emit
+variable c_type
+variable c_type_chars
+variable c_cr
+variable c_key
+[then]
+
 \ ********************
 \ *S Serial primitives
 \ ********************
 internal
 
-: +FaultConsole	( -- )  ;
+\ : +FaultConsole	( -- )  ;
 \ *G Because this is a polled driver, *\fo{+FaultConsole} for
 \ ** fault handling is a *\fo{NOOP}. See *\i{Cortex/FaultCortex.fth}
 \ ** for more details.
@@ -44,11 +52,15 @@ target
 \ *G Wrapped call that checks for throttling, and if so,
 \ calls PAUSE to let another task run, or just does a WFI if no multitasker.
 \ The only interesting thing is failure, or -1.  That means retry.
+	\ 1 c_emit +! 
     (seremitfc) if [ tasking? ] [if] PAUSE [else] [asm wfi asm] [then] then 
 	;
 
 : (sertype) \ caddr len base --
 \ *G Transmit a string on the given UART.
+  \ 1 c_type +!
+  \ over c_type_chars +!
+ 
   -rot bounds
   ?do  i c@ over (seremit)  loop
   drop
@@ -56,6 +68,7 @@ target
 
 : (sercr)	\ base --
 \ *G Transmit a CR/LF pair on the given UART.
+   \ 2 c_cr +!
    $0D over (seremit)  $0A swap (seremit)
 ;
 
@@ -72,6 +85,7 @@ target
 	 THEN \ base ret t/f 
 	until  \ base ret 
 	swap drop 
+    \ 1 c_key +!
 ;
 
 \ THis is a system call.
