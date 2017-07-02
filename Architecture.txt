@@ -73,14 +73,21 @@ System calls can't block.  The SAPI is designed to support the needs
 of a client application that provides it's own mechanism for blocking.
 
 
-Level 0 - Getchar, Putchar, CharsAvailable.  No Device interrupts.
+Level 0 - Putchar/EMIT,  CharsAvailable/KEY?, Getchar/KEY.
+Thin wrappers around device access.  No interrupts. KEY can issue a WFI if there is
+no input available, or issue a WFI when Putchar returns full/blocked
 
-These are all it takes to get up an going.  Forth polls via the system calls.  Implementations
+These are all it takes to get up and going.  Forth polls via the system calls.  Implementations
 that use interrupts as part of serial device management can use WFI for power savings.
 
-Level 1 - Level 0 + IO Devices that generate interrupts.
-KEY can issue a WFI if there is no input available, or issue a WFI when Putchar
-returns full/blocked
+Level 1 - Putchar/EMIT,  CharsAvailable/KEY?, Getchar/KEY.
+IO Devices that generate interrupts and return a status code to indicate that
+the calling task should yield/pause.  
+
+Level 2 - Putchar/EMIT,  CharsAvailable/KEY?, Getchar/KEY, CR, TYPE
+IO Devices that generate interrupts and return a status code to indicate that
+the calling task should yield/pause.  CR and TYPE make sense on alternate 
+output devices.
 
 -----------------------------------------------------------------
 Dynamic Linking/Jump Tables.

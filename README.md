@@ -28,14 +28,10 @@ Leopard Gecko.  The SOC-specific files for that project are in another repositor
 Currently supported SOCs include Cortex-M3s from TI (Stellaris) and
 the ST Micro STM32L family.   Its extensible.
 
-
-
-
 Included:
-- Architecture.txt : Detailed 
+- Architecture.txt : An in-depth discussion of how it works.
 - SAPI - Key pieces that make up the C-Side layer.
 - Forth - Implementation files for MPE Forth
-
 
 ----------------------
 Files are supplied for use with MPE Forth (http://www.mpeforth.com).
@@ -44,6 +40,7 @@ Not included:  Libraries from TI and/or ST.   Those are covered
 under their own licenses and may be obtained directly from the
 vendors.
 
-Not Included: Forth compiler from MPE.  
+Not Included: Forth compiler from MPE.  MPE's Lite compiler will work
+with this code.  It runs on windows or under WINE on Linux or Mac.
 
 
