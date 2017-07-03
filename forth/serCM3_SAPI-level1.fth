@@ -132,7 +132,7 @@ create Console1 ' serkey1 , ' serkey?1 , ' seremit1 , ' sertype1 , ' sercr1 ,
 \ --------------------------------------------------------------------
 \ Non-UARTs.
 \ --------------------------------------------------------------------
-[defined] useStream10? [if]    useStream10? 1 = [if] 
+[defined] useStream10? [if] useStream10? 1 = [if] 
 : seremit10 #10 (seremit)  ;
 : sertype10	#10 (sertype)  ;
 : sercr10	#10 (sercr)  ;
@@ -140,6 +140,17 @@ create Console1 ' serkey1 , ' serkey?1 , ' seremit1 , ' sertype1 , ' sercr1 ,
 : serkey10	#10 (serkey)  ;
 create Console10 ' serkey10 , ' serkey?10 , ' seremit10 , ' sertype10 , ' sercr10 ,	
 [then]  [then]
+
+[defined] useStream11? [if] useStream11? 1 = [if] 
+: seremit11 #11 (seremit)  ;
+: sertype11	#11 (sertype)  ;
+: sercr11	#11 (sercr)  ;
+: serkey?11	#11 (serkey?)  ;
+: serkey11	#11 (serkey)  ;
+create Console11 ' serkey11 , ' serkey?11 , ' seremit11 , ' sertype11 , ' sercr11 ,	
+[then]  [then]
+
+
 
 console-port 0 = [if]
   console0 constant console
