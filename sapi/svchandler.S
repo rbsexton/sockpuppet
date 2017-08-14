@@ -22,6 +22,7 @@
 
 
 @ Version History
+@ 2.06.00 - Move the jump table to SRAM - it's faster and can be modified.
 @ 2.05.00 - Officially define wake request
 @ 2.04.00 - Change return codes for putchar, type and eol for use with multitasking.
 @ 2.03.00 - Support 64-bit return values.
@@ -40,7 +41,7 @@
 @ Minor Release / Feature Change
 @ Patchlevel 
 __SAPI_00_ABIVersion:
-	ldr r0,  =0x00020400
+	ldr r0,  =0x00020600
 	bx lr  
 
 @ Hang out and wait for debugger help.
@@ -98,13 +99,13 @@ SVC_Handler:
 	stm r4, { r0-r1 } @ Support 64-bit return values.
 	pop { r4, pc }
 
-	.align
-
 // ------------------------------------------------------------
 // The first 16 are whats required for bootstrapping forth.
 // TYPE and CR are special - They are included for efficiency,
 // but can be built from other primitives.
 // ------------------------------------------------------------
+
+.data 
 .align 4
 syscall_table:
 	@ ------------------ Mandatory -----------------
@@ -170,6 +171,7 @@ syscall_table:
 	@ R1 - Number of Characters
 	@ R2 - Pointer to the data
 	@ R3 - The address of the caller's tcb if blocking is requested, or zero.
+	@ Returns:
 	@  0 - Success/Room for more.
 	@  1 - Caller must yield/pause and wait for wake by service layer.
 	@ Unsupported/Stub behavior - Fault/Spin/Trap
@@ -273,7 +275,6 @@ syscall_table:
 
 
 #if (SAPI_LWIP) 
-
 	.word __SAPI_20_GetIP
 	.extern __SAPI_20_GetIP
 
@@ -296,10 +297,25 @@ syscall_table:
 	.extern __SAPI_26_UDP_Recv
 
 	.word __SAPI_27_UDP_Send
-	.extern __SAPI_27_UDP_Send
-	
-	
+	.extern __SAPI_27_UDP_Send	
+#else
+	.word	__SAPI_RFU @ 20
+	.word	__SAPI_RFU @ 21
+	.word	__SAPI_RFU @ 22
+	.word	__SAPI_RFU @ 23
+	.word	__SAPI_RFU @ 24
+	.word	__SAPI_RFU @ 25
+	.word	__SAPI_RFU @ 26
+	.word	__SAPI_RFU @ 27
 #endif
+
+.word	__SAPI_RFU @ 28
+.word	__SAPI_RFU @ 29
+.word	__SAPI_RFU @ 30
+.word	__SAPI_RFU @ 31
+
+
+
 
 syscall_table_end:
 
