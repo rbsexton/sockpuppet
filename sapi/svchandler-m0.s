@@ -34,20 +34,7 @@
 
 .text
 .syntax unified
-
-.thumb_func @ Set the thumb bit in the linker. 
-@ Version coding: 0xMMIIPP
-@ Major 
-@ Minor Release / Feature Change
-@ Patchlevel 
-__SAPI_00_ABIVersion:
-	ldr r0,  =0x00020600
-	bx lr  
-
-@ Hang out and wait for debugger help.
-.thumb_func
-__SAPI_RFU:
-	b __SAPI_RFU
+.cpu cortex-m0
 
 .thumb_func     @  Make sure the linker puts it in the table.
 .global SVC_Handler
@@ -68,35 +55,46 @@ SVC_Handler:
 
 	@ bkpt #0
 
-	tst	lr,#0x4		@ Figure out which stack
-	ite	eq
-	mrseq	r0,msp		@ Main stack
-	mrsne	r0,psp		@ Process/Thread Stack
+	movs r0, #4
+	mov	 r1, lr 
+	tst	 r0, r1
+	beq  use_msp 
+	mrs r0, psp
+	b done 
+use_msp: 
+	mrs r0, msp 
+done: 
 
 	@ Now that we have a copy of the original 
 	@ stack pointer we can put more things on the stack.
 	push { r4, lr }
-	
-	@ This is where you could make a copy of the stack frame pointer
-	@ for system calls that need to access it - things like panic,
-	@ reboot, etc that will pull the stacked PC, and so on.
-	@ ldr r1, =saved_frame_p
-	@ str r0, [ r1 ]
-	
+		
 	mov r4, r0 @ We'll over-write R0, so stash it in r4.
 	
 	ldr  r1, [r0,#24]	@ Get the stacked PC
-	ldrb r1, [r1,#-2]	@ Extract the svc call number
+	subs r1, #2
+	ldrb r1, [r1, #0]	@ Extract the svc call number
+	lsls r1, r1, #2         @ Make this back into a table offset.
+
 
 	@ Range Checking goes here.
 	@ That is, assuming that you don't trust yourself...
 	
 	ldr  r2,=syscall_table 
-	ldr  r12, [r2, r1, LSL #2]
+	add  r2, r2, r1    @ Table lookup
+	ldr  r2, [r2, #0]  @ Get the address of the function
+	mov  r12, r2       @ We'll be loading up R0-R3 in a moment.			
 
-	ldm r4, { r0-r3 }
+	ldr r0, [ r4,  #0 ] @ Unroll LDM.
+	ldr r1, [ r4,  #4 ]
+	ldr r2, [ r4,  #8 ]
+	ldr r3, [ r4, #12 ]
 	blx r12
-	stm r4, { r0-r1 } @ Support 64-bit return values.
+
+	@ Support 64-bit return values.
+	str r0, [ r4, #0 ]
+	str r1, [ r4, #4 ] 
+
 	pop { r4, pc }
 
 .end
