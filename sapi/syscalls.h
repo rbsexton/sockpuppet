@@ -1,6 +1,9 @@
-// Function Prototypes for SAPI Calls.
-// This serves as a basic check for supplied supervisor functions.
-// Copyright (C) 2016, Robert Sexton.  All rights reserved.
+/// @file syscalls.h
+/// @brief Private functions wrapped by the syscall dispatcher.
+///
+/// SAPI Implementations must comply with this API
+///
+// Copyright (C) 2016-2017, Robert Sexton.  All rights reserved.
 // Covered by the terms of the supplied Licence.txt file
 
 // Applies to SAPI ABI 2.05
