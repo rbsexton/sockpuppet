@@ -17,7 +17,8 @@
 CODE SAPI-Version  \ -- n
 \ *G Get the version of the binary ABI in use. 
 	svc # SAPI_VEC_VERSION 
-	str tos, [ psp, # -4 ] !
+	sub .s psp, # 4
+	str tos, [ psp, # 0 ] 
 	mov tos, r0
 	next,
 END-CODE
@@ -40,8 +41,12 @@ CODE (SEREMITFC) \ char base --
 \ ** It'll be wrapped by something that can respond to the flow control 
 \ ** return code and PAUSE + Retry 
 	mov r0, tos
+Cortex-M0? [if]
+	ldm psp ! { r1 } 
+[else]
 	ldr r1, [ psp ], # 4
-	[defined] SAPIWakeSupport? [if] mov r2, up [else] mov r2, # 0 [then] 
+[then]
+	mov r2, up 
 	svc # SAPI_VEC_02_PutChar	
 	mov tos, r0
     next,
@@ -50,7 +55,7 @@ END-CODE
 CODE (SERKEYFC) \ base -- char  
 \ *G Get a character from the port, or -1 for fail
 	mov r0, tos	
-	[defined] SAPIWakeSupport? [if] mov r1, up [else] mov r1, # 0 [then] 
+	mov r1, up  
 	svc # SAPI_VEC_03_GetChar
 	mov tos, r0
 	next,
@@ -59,9 +64,8 @@ END-CODE
 CODE (SERTYPEFC) \ caddr len base -- return  
 \ *G Output characters.  
 	mov r0, tos	
-	ldr r1, [ psp ], # 4
-	ldr r2, [ psp ], # 4
-	[defined] SAPIWakeSupport? [if] mov r3, up [else] mov r3, # 0 [then] 
+	ldm psp ! { r1, r2 } 
+	mov r3, up 
 	svc # SAPI_VEC_05_PutString
 	mov tos, r0
 	next,
@@ -70,7 +74,7 @@ END-CODE
 CODE (SERCRFC) \ base -- return  
 \ *G Send a line terminator to the port.  Return 0 for success, -1 for fail.
 	mov r0, tos	
-	[defined] SAPIWakeSupport? [if] mov r1, up [else] mov r1, # 0 [then] 
+	mov r1, up 
 	svc # SAPI_VEC_06_EOL
 	mov tos, r0
 	next,
@@ -93,30 +97,39 @@ CODE PETWATCHDOG  \ n --
 \ *G Refresh the watchdog.  Pass in a platform-specific number
 \ ** To specify a timerout (if supported), or zero for the default value. 
 	mov r0, tos
-	ldr r1, [ psp ], # 4
 	svc # SAPI_VEC_14_PetWatchdog
+Cortex-M0? [if]
+	ldm psp ! { tos } 
+[else]
 	ldr tos, [ psp ], # 4
+[then]
 	next,
 END-CODE
 
+: push0 0 ; 
+
 CODE TICKS  \ -- n 
 \ *G The current value of the millisecond ticker.
-    mov r0, # 0 \ We want the actual value.
+        mov .s r0, # 0 \ We want the actual value.
 	svc # SAPI_VEC_15_GetTimeMS
-	str tos, [ psp, # -4 ] !
+	sub .s psp, # 4
+	str tos, [ psp, # 0 ] 
 	mov tos, r0
 	next,
 END-CODE
 
 CODE WAKEREQ \ event arg -- t/f  
 \ *G Request a wake of the current task.  Implementation Defined.
-	mov r1, tos	
+\ ** Includes an arguement swap...
+Cortex-M0? [if]
+	ldm psp ! { r0 } 
+[else]
 	ldr r0, [ psp ], # 4
-	[defined] SAPIWakeSupport? [if] mov r2, up [else] mov r2, # 0 [then] 
+[then]
+	mov r1, tos	
+	mov r2, up  
 	svc # SAPI_VEC_12_WakeRequest
 	mov tos, r0
 	next,
 END-CODE
-
-
 
