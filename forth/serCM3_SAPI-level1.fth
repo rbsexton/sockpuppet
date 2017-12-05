@@ -127,7 +127,6 @@ create Console0	\ -- addr ; OUT managed by upper driver
 : serkey?1 #1 (serkey?)  ;
 : serkey1  #1 (serkey)  ;
 create Console1 ' serkey1 , ' serkey?1 , ' seremit1 , ' sertype1 , ' sercr1 ,	
-console-port  #1 = [if] console1 constant console [then]
 [then]  [then]
 
 \ --------------------------------------------------------------------
@@ -140,7 +139,9 @@ console-port  #1 = [if] console1 constant console [then]
 : serkey?10	#10 (serkey?)  ;
 : serkey10	#10 (serkey)  ;
 create Console10 ' serkey10 , ' serkey?10 , ' seremit10 , ' sertype10 , ' sercr10 ,	
-console-port  #10 = [if] console10 constant console [then]
+console-port  #10 = [if]
+  console10 constant console
+[then]
 [then]  [then]
 
 [defined] useStream11? [if] useStream11? 1 = [if] 
