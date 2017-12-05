@@ -10,7 +10,10 @@
 /// This one is pretty simple.   Just put an address into 
 /// app_start_address and trigger PendSV.    This could 
 /// be wrapped into a system call if the app needs to self-restart
-//
+///
+/// This approach is necessary to support re-starting forth on the 
+/// fly.   For one-time startup, there is simpler code in cm3lib
+/// 
 // Copyright(C) 2011-2016 Robert Sexton
 // Covered by the terms of the supplied Licence.txt file
 

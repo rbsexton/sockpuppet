@@ -1,8 +1,27 @@
-@ PendSV handler to launch forth on M3.
+@ PendSV handler to launch forth or another client app on
+@ Cortex-M0/M3/M4.   This could be a little more concise, and faster
+@ if written for Thumb-2.  There isn't much point.
+@ 
+@ The Client app must be a standard Cortex-App with a standard
+@ vector table - we'll load the App's initial stack pointer from 
+@ relative location 0, and jump to the vector at relative address 0x4
+@
+@  Since the handler can't take arguments,
+@ it relies upon two arguments that are essentially a struct:
+@ {
+@  uint32_t app_address;
+@  uint32_t app_argument; 
+@ }
+@ 
+@ The main use for the argument is passing a pointer to a runtime
+@ linking structure.
 @ 
 @ This re-starts forth by modifying the exception
-@ return stack.
-@
+@ return stack. 
+@ This is a potential gotcha here.  If the registers went onto MSP,
+@ we need to unwind the now-unneeded stack frame.
+@ If called from something that was using the PSP, we alter that.
+ 
 .data
 .global pendsv_args
 pendsv_args:
@@ -31,7 +50,7 @@ done:
 
 	ldr newpsp, [r0, #0 ] @ Retrieve the client PSP\n
 	mov r2, #32 
-	sub newpsp, newpsp, r2 @ Point it at the bottom of a fake stack frame
+	sub newpsp, newpsp, r2 @ Create an exception stack frame to fill in.
 
 	str arg, [r1, #0]   @ New R0 = arg
 
