@@ -19,12 +19,11 @@ There are several levels of user/supervisor separation.
 
 1. None.   The User and the supervisor share a common stack and memory space.
 2. Two-Stack.  The user code and the supervisor code have separate stacks.   
-3. Two stack with user mode thread.   This mode is required to make best use the MPU.
+3. Two stack with user mode thread.   This mode is required to make best use the MPU.   Not all Cortex-Ms support uprivileged thread mode. 
 
 The SOCKPuppet code includes a PendSV handler for making the switch via the interrupt mechanism.    It construct a stack frame that unrolls from exception mode and starts the client.
 
-
-There are several ways to do this.   For simpler solutions, see 
+There are several ways to do this.   The PendSV approach support application restart after application faults.   For simpler solutions, see [bl_launcher.s](https://github.com/rbsexton/cm3lib/blob/master/bl_launcher.s) 
 
 ## Power Reduction.
 
