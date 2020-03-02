@@ -1,13 +1,14 @@
 @ SVC Call Table.
 @
 @ Copyright (C) 2016-2017, Robert Sexton.  All rights reserved.
-@ Covered by the terms of the supplied Licence.txt file
+@ Covered by the terms of the supplied License.txt file
 @ 
 @ This is a reference copy.  It may need to be customized, depending
 @ on how much of the SAPI API is implemented.
 
 
 @ Version History
+@ 3.00.00 - Add the GetCharWillBlock system call
 @ 2.06.00 - Move the jump table to SRAM - it's faster and can be modified.
 @ 2.05.00 - Officially define wake request
 @ 2.04.00 - Change return codes for putchar, type and eol for use with multitasking.
@@ -28,7 +29,7 @@
 @ Minor Release / Feature Change
 @ Patchlevel 
 __SAPI_00_ABIVersion:
-	ldr r0,  =0x00020600
+	ldr r0,  =0x00030000
 	bx lr  
 
 @ Hang out and wait for debugger help.
@@ -71,20 +72,16 @@ syscall_table:
 	@ R2 - The address of the caller's tcb if blocking is requested, or zero.
 	@
 	@ Returns:
-	@  0 - Success/Room for more.
-	@  1 - Caller must yield/pause and wait for wake by service layer.
+	@  Amount of room available in the output buffer
 	@
 	.word	__SAPI_02_PutChar		@ SVC 2/emit
 	.extern __SAPI_02_PutChar
 
 	@ ------------------ Core -----------------
-	@ Single character read
+	@ Single character blocking read
 	@ R0 - Stream #
-	@ R1 - The address of the caller's tcb if blocking is requested, or zero.
 	@
-	@ Returns
-	@ >= 0 - the Character
-	@   -1 - failure/nothing
+	@ Returns - data
 	@
 	.word	__SAPI_03_GetChar		@ SVC 3/key
 	.extern	__SAPI_03_GetChar
@@ -127,7 +124,17 @@ syscall_table:
 	.word	__SAPI_06_EOL			@ SVC 6/cr	 
 	.extern	__SAPI_06_EOL
 
-	.word	__SAPI_RFU @ 7
+  @ ------------------ Core -----------------
+	@ Non-blocking output 
+	@ R0 - Stream #
+  @ R1 - Character 
+  @ R2 - Task TCB 
+	@
+	@ Returns
+	@ R0 - The amount of space in the ouput queue, or -1 for fail.
+  .word	__SAPI_07_PutCharNonBlocking		@ SVC 2/emit
+	.extern __SAPI_07_PutCharNonBlocking
+
 	.word	__SAPI_RFU @ 8
 	.word	__SAPI_RFU @ 9
 	.word	__SAPI_RFU @ 10
@@ -153,6 +160,7 @@ syscall_table:
 	@ mechanism for measuring this is a free-running counter
 	@ clock-gated by WFI, with an ISR that measures the ticks
 	@ of the timer per wall clock unit of time.  
+  @ This trick requires a device with automatic clock gating.
 	@
 	@ No arguments.
 	@ Returns a platform-specific measure of CPU utilization.

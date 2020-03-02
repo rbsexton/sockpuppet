@@ -57,18 +57,19 @@ The supervisor calls can also ignore the supplied TCB, in which case the system 
 
 As the implementation complexity level goes up, more power-saving techniques are possible.  To reduce power, use the WFI instruction whenever possible to power down the CPU until something interesting happens.
 
-_Important!!!!_  System calls can't block.  The SAPI is designed to support the needs of a client application that provides it's own mechanism for blocking.
-
+_Important!!!!_  System calls should not block or spin.  The SAPI is designed to support the needs of a client application that provides its own mechanism for blocking.
 
 - Level 0 - Putchar/EMIT,  CharsAvailable/KEY?, Getchar/KEY.
-Thin wrappers around device access.  No interrupts. KEY can issue a WFI if there is no input available, or issue a WFI when Putchar returns full/blocked
+Thin wrappers around device access with output buffer feedback.   Calling functions can yield when the output fifo is full 
 
-These are all it takes to get up and going.  Forth polls via the system calls.   This level of complexity provides clean separation between device management user code and simplifies code reuse across projects.   Implementations that use interrupts as part of serial device management can use WFI for power savings.
+These are all it takes to get up and going.  Forth polls via the system calls.   This level of complexity provides clean separation between device management user code and simplifies code reuse across projects.
 
-- Level 1 - Putchar/EMIT,  CharsAvailable/KEY?, Getchar/KEY.
+- Level 1 - Level 0, with interrupts for WFI support.   Pending stream I/O must wake the CPU.    
+
+- Level 2 - Putchar/EMIT,  CharsAvailable/KEY?, Getchar/KEY.
 IO Devices that generate interrupts and return a status code to indicate that the calling task should yield/pause.  
 
-- Level 2 - Putchar/EMIT,  CharsAvailable/KEY?, Getchar/KEY, CR, TYPE IO Devices that generate interrupts and return a status code to indicate that the calling task should yield/pause.  CR and TYPE make sense on alternate  output devices.
+- Level 3 - Putchar/EMIT,  CharsAvailable/KEY?, Getchar/KEY, CR, TYPE IO Devices that generate interrupts and return a status code to indicate that the calling task should yield/pause.  CR and TYPE make sense on alternate  output devices.
 
 ## Dynamic Linking/Jump Tables.
 
@@ -76,3 +77,71 @@ The supplied code includes a basic mechanism for exporting C (or other language)
 that dylink.fth parses to create CONSTANTS at runtime or update the contents of VALUES.
 
 The GetRuntimeData syscall returns this value when called with an argument of zero.
+
+## Appendix A: Standard API Version 3.0
+
+```
+// System Call Number 2
+// Data Output.   Blocking  
+int PutChar (
+   // Character to transmit, or
+   // -1 : Flush the output 
+   int character, 
+  
+  int stream, 
+  // Stream descriptor for the specific channel.
+  // which UART, network connection, etc.
+  
+  ) 
+returns the number of bytes available in the output buffer.
+```
+
+```
+// System Call Number 3
+// Retrieve new data.   Blocking, which may not be what you want.   
+int GetChar(
+  int stream) 
+  // Stream descriptor for the specific channel.
+  // which UART, network connection, etc.
+  
+  returns the next byte of data.  
+```
+
+```
+// System Call Number 4
+// Check for new data 
+int CharsAvailable(
+  int stream, 
+  // Stream descriptor for the specific channel.
+  // which UART, network connection, etc.
+
+  void *tcb,
+  // Task control block of the caller, or zero    
+  // If non-zero and there are no characters available, 
+  // the system call will mark the task unrunnable.
+  // The specifics of how to do this are implementation defined
+  )
+```
+
+```
+// System Call Number 7
+// Data Output 
+PutCharNonBlocking (
+   // Character to transmit, or
+   // -1 : Flush the output 
+   int character, 
+  
+  int stream, 
+  // Stream descriptor for the specific channel.
+  // which UART, network connection, etc.
+  
+  void *tcb,
+  // Task control block of the caller, or zero    
+  // If there is no more room after the operation,
+  // the system call will mark the task unrunnable.
+  // The specifics of how to do this are implementation defined
+  ) 
+returns the number of bytes available in the output buffer, or 
+-1 for write failure 
+```
+
