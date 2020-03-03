@@ -1,5 +1,6 @@
-// Level 0 
-// Wrappers around USART Functions.
+// Level 1
+// USART Driver that makes use of interrupts and ring buffers.
+// 
 // These are named with leading unscores so that the system calls 
 // can have the expected names.
 //
@@ -19,7 +20,9 @@
 //
 // Required Initialization
 /*
-// UART needs to be higher priority than SVC.   I don't recall why 
+// The UART handler needs to run at the same priority as the System call Handler
+// or it needs to hand off wake management to a pended handler to prevent 
+// race conditions and potentially dropped wake events.
    NVIC_SetPriority( USART2_IRQn, 0x40);
    
    // Hardware Initialization
@@ -126,16 +129,17 @@ static int __SAPI_PutCharGeneral_USART(
     return(ringbuffer_free(ring));
     }	
 
-  if ( blocking && ( ringbuffer_free(ring) == 0 ) ) return(-1);
-
   // Check for a full ringbuffer, and if so, make room in the 
   // hardware FIFO for a character so that we have a place 
-  // to put the new character. 
-  if ( ringbuffer_free(ring) == 0 ) { 
-    USART_ofifo_drain((USART_TypeDef *) base);
-    LL_USART_TransmitData8((USART_TypeDef *) base,ringbuffer_getchar(ring));
-    ringbuffer_addchar(ring, c);
-    return(ringbuffer_free(ring));
+  // to put the new character. If we're not blocking, report -1
+  if ( ringbuffer_free(ring) == 0 ) {
+    if ( blocking ) {
+      USART_ofifo_drain((USART_TypeDef *) base);
+      LL_USART_TransmitData8((USART_TypeDef *) base,ringbuffer_getchar(ring));
+      ringbuffer_addchar(ring, c);
+      return(ringbuffer_free(ring));
+      }
+    else return(-1);
     }
   
   // The data will go in the ringbuffer, or the FIFO
@@ -222,12 +226,12 @@ int __SAPI_04_GetCharAvail_USART(int stream) {
 // TODO: Make sure that this doesn't get stuck.   Will TXE 
 // trigger over and over?
 // --------------------------------------------------------------
-int count_handler    = 0;
-int count_handler_tx = 0;
-int count_handler_rx = 0;
+// int count_handler    = 0;
+// int count_handler_tx = 0;
+// int count_handler_rx = 0;
 void Console_USART_IRQHandler(USART_TypeDef *base) {
 
-  count_handler++;  
+  // count_handler++;  
 
   // Clear the interrupts with a mask 
   base->ICR |= 0x121B5F; 
@@ -235,7 +239,7 @@ void Console_USART_IRQHandler(USART_TypeDef *base) {
 
   // Output Queue space.
   if ( irq_status_reg & USART_ISR_TXE) {
-    count_handler_tx++;
+    // count_handler_tx++;
     RINGBUF *ring = &usart_output_ringbuffer;
     if (ringbuffer_used(ring)) 
       LL_USART_TransmitData8(base,ringbuffer_getchar(ring));
@@ -243,7 +247,7 @@ void Console_USART_IRQHandler(USART_TypeDef *base) {
     
   // Input Characters 
   if ( (irq_status_reg & USART_ISR_RXNE)  ) {
-    count_handler_rx++;
+    // count_handler_rx++;
     RINGBUF *ring = &usart_input_ringbuffer;
     ringbuffer_addchar(ring,base->RDR);    
     }		  		
