@@ -18,7 +18,7 @@ System Call Parameters/Return codes are documented in svchandler.S
 There are several levels of user/supervisor separation.
 
 1. None.   The User and the supervisor share a common stack and memory space.
-2. Two-Stack.  The user code and the supervisor code have separate stacks.   
+2. Two stack.  The user code and the supervisor code have separate stacks.   
 3. Two stack with user mode thread.   This mode is required to make best use the MPU.   Not all Cortex-Ms support uprivileged thread mode. 
 
 The SOCKPuppet code includes a PendSV handler for making the switch via the interrupt mechanism.    It construct a stack frame that unrolls from exception mode and starts the client.
@@ -32,12 +32,14 @@ The most basic thing is to issue a WFI.  Levels of complexity:
 0. No Multitasker - have KEY issue a WFI if no input before trying again.
 
 1. Multitasker without integrated WFI
- Create a task that does wfi, pause forever and add it to the task list.
+ Create a task with an infinite loop: `wfi, pause`.  Add it to the task list.
  see cm3forthtools/idlewfi for an example.
 
 2. Multitasker with integrated WFI
- Idle task must STOP themselves.  The multitasker will issue the WFI when there are no runnable tasks.   This is the best performing solution, but the most complex to implement.
-
+ Idle task must STOP themselves.  The multitasker will issue the WFI when there are no runnable tasks. 
+ A Fully reliable implementation of this requires the supervisor to manage the run/stop 
+ bits in the tasks. 
+ 
 ## Blocking IO.
 
 If the scheduler supports it, blocking IO is very efficient.  The 

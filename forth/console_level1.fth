@@ -1,8 +1,7 @@
-\ console_level0.fth - SAPI polled RX, polled TX with interrupt support.
-\ The only meaningful change is that we can use WFI with PAUSE 
-
-\ This code requires TASKING 
-
+\ console_level1.fth - SAPI polled RX, polled TX with interrupt support.
+\
+\ This code supports TASKING 
+\
 \ Copyright (c) 2020, Robert Sexton.  All rights reserved.
 \ Covered by the terms of the supplied Licence.txt file
 
@@ -21,7 +20,7 @@
 \ There are a few different ways to do this.    The system call 
 \ returns the amount of space in the output queue, or -1 if its full.   
   begin \ char base -  
-	 2dup 0 __emit_nb   \ char base ret t/f 
+	 2dup 0 __emit_nb   \ char base ret
 	 [ tasking? ] [if] dup 0 < if PAUSE then [then]  
 	 0 >= until  \ base ret 
   2drop  
@@ -49,7 +48,7 @@
 : (serkey) \ base -- c
 \ *G Get a character from the port, or call pause and try again.
   begin \ base -  
-	 dup 0 __key?  \ base ret t/f 
+	 dup 0 __key?  \ base ret
 	 [ tasking? ] [if] dup 0=  if PAUSE then [then]  
 	 0 > until  \ base ret 
 	( base ) __key   

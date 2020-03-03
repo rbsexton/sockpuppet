@@ -14,14 +14,15 @@ can be used to create atomic operations or communicate safely with interrupt han
 
 ## Applicability to other languages
 
-The techniques described here apply equally well to other languages.  The only requirements are a task loop and tasks with a wake/sleep control.   See Appendix A
-for an example.
+The techniques described here apply equally well to other languages.  The requirements are a task loop and tasks with a wake/sleep control.   See Appendix A for an example.
 
 ## The Supervisor / Client model
 
 An effective way to meet latency requirements is to divide interrupt processing
 into a traditional top half / bottom half arrangement.   The top half (and 
-interrupt handler) responds to events and schedules/wakes processing by the bottom half.  Interrupt handlers with a short activity period are less likely to preempt or delay other handlers.
+interrupt handler) responds to events and schedules/wakes processing by the 
+bottom half.  Interrupt handlers with a short activity period are less likely
+to preempt or delay other handlers.
 
 ## Dealing with race conditions
 
@@ -67,10 +68,11 @@ relative to other interrupts and system calls (SVC) at the same interrupt
 priority level.  Its possible to create atomic operators on Cortex-M0 
 devices by disabling interrupts.
 
- There are two ways enter exception/interrupt mode from user 
-code:
+There are two ways enter exception/interrupt mode from user code:
 
-- Software Triggered Interrupt via a write to the STIR register.   Most devices have more interrupt vectors than devices that require interrupt service.   Software triggered interrupts do not allow arguments, but can be used with shared pointers
+- Software Triggered Interrupt via a write to the STIR register.   Most devices
+ have more interrupt vectors than devices that require interrupt service.
+  Software triggered interrupts do not allow arguments, but can be used with shared pointers
 or data structures.   Software triggered interrupts that share data structures with 
 peripheral interrupt handlers must run at the same interrupt priority to prevent 
 race conditions.   A software triggered interrupt has at least 12 CPU cycles of overhead.
