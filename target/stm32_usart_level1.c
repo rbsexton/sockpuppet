@@ -142,28 +142,16 @@ static int __SAPI_PutCharGeneral_USART(
     else return(-1);
     }
   
-  // The data will go in the ringbuffer, or the FIFO
-  // At this point we know that there is room for it. 
-  // Make a best effort to add data to the hardware fifo, then 
-  // decide what to do.    We're usually writing faster than 
-  // the USART can go, so the common case is ringbuffer add. 
-  
-  // If the hardware FIFO is full it goes into the ring buffer. 
-  if ( ! LL_USART_IsActiveFlag_TXE((USART_TypeDef *) base) ) {
-    ringbuffer_addchar(ring, c);      
-    return(ringbuffer_free(ring));      
-    }
-  
-  // Otherwise we pull from the ringbuffer and send that, 
-  // or we send the data direct to the hardware.  
-  if ( ringbuffer_used(ring) ) { // Send the stuff from the ring.
-    LL_USART_TransmitData8( (USART_TypeDef *) base,ringbuffer_getchar(ring));
-    ringbuffer_addchar(ring, c);      
-    } 
-  else { // Empty Ringbuffer.   Straight to hardware. 
-      LL_USART_TransmitData8( (USART_TypeDef *) base,c);
-    }
+  // The data will go in the ringbuffer, and may get pulled back 
+  // out if there is room in the FIFO.  Adding to the RB is the 
+  // common case when there is already data being transmitted.
+  ringbuffer_addchar(ring, c);      
 
+  // If there is room in the xmit fifo, put data in there. 
+  if ( LL_USART_IsActiveFlag_TXE((USART_TypeDef *) base) ) {
+    LL_USART_TransmitData8( (USART_TypeDef *) base,ringbuffer_getchar(ring));
+    }
+  
   return(ringbuffer_free(ring));        
   }
 
