@@ -142,8 +142,7 @@ static int __SAPI_PutCharGeneral_USART(
     else return(-1);
     }
   
-  // The data will go in the ringbuffer, and may get pulled back 
-  // out if there is room in the FIFO.  Adding to the RB is the 
+  // The data will go in the ringbuffer.  Adding to the RB is the 
   // common case when there is already data being transmitted.
   ringbuffer_addchar(ring, c);      
 
