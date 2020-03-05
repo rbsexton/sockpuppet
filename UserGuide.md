@@ -66,7 +66,7 @@ Thin wrappers around device access with output buffer feedback.   Calling functi
 
 These are all it takes to get up and going.  Forth polls via the system calls.   This level of complexity provides clean separation between device management user code and simplifies code reuse across projects.
 
-- Level 1 - Level 0, with interrupts for WFI support.   Pending stream I/O must wake the CPU.    
+- Level 1 - Level 0, with interrupts and buffered IO.  Pending stream I/O must wake the CPU.    
 
 - Level 2 - Putchar/EMIT,  CharsAvailable/KEY?, Getchar/KEY.
 IO Devices that generate interrupts and return a status code to indicate that the calling task should yield/pause.  
@@ -80,70 +80,4 @@ that dylink.fth parses to create CONSTANTS at runtime or update the contents of 
 
 The GetRuntimeData syscall returns this value when called with an argument of zero.
 
-## Appendix A: Standard API Version 3.0
-
-```
-// System Call Number 2
-// Data Output.   Blocking  
-int PutChar (
-   // Character to transmit, or
-   // -1 : Flush the output 
-   int character, 
-  
-  int stream, 
-  // Stream descriptor for the specific channel.
-  // which UART, network connection, etc.
-  
-  ) 
-returns the number of bytes available in the output buffer.
-```
-
-```
-// System Call Number 3
-// Retrieve new data.   Blocking, which may not be what you want.   
-int GetChar(
-  int stream) 
-  // Stream descriptor for the specific channel.
-  // which UART, network connection, etc.
-  
-  returns the next byte of data.  
-```
-
-```
-// System Call Number 4
-// Check for new data 
-int CharsAvailable(
-  int stream, 
-  // Stream descriptor for the specific channel.
-  // which UART, network connection, etc.
-
-  void *tcb,
-  // Task control block of the caller, or zero    
-  // If non-zero and there are no characters available, 
-  // the system call will mark the task unrunnable.
-  // The specifics of how to do this are implementation defined
-  )
-```
-
-```
-// System Call Number 7
-// Data Output 
-PutCharNonBlocking (
-   // Character to transmit, or
-   // -1 : Flush the output 
-   int character, 
-  
-  int stream, 
-  // Stream descriptor for the specific channel.
-  // which UART, network connection, etc.
-  
-  void *tcb,
-  // Task control block of the caller, or zero    
-  // If there is no more room after the operation,
-  // the system call will mark the task unrunnable.
-  // The specifics of how to do this are implementation defined
-  ) 
-returns the number of bytes available in the output buffer, or 
--1 for write failure 
-```
 
