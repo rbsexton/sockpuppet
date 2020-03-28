@@ -39,7 +39,8 @@ unsigned GetSharedData (
   // Specific Which data table to return.
   // Supported indices:
   // 0: Target-Specific Tables
-  // 1: System Call Table 
+  // 1: System Call Table - (Optional)
+  // 2: System Call Table length, in bytes (Optional)
    ) 
 returns the address of the table in question, or 0
 ```
