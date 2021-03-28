@@ -56,34 +56,35 @@ SVC_Handler:
 	@ bkpt #0
 
 	movs r0, #4
-	mov	 r1, lr 
-	tst	 r0, r1
+	mov  r1, lr 
+	tst  r0, r1
 	beq  use_msp 
-	mrs r0, psp
+	mrs  r0, psp
 	b done 
 use_msp: 
-	mrs r0, msp 
+	mrs  r0, msp 
 done: 
 
 	@ Now that we have a copy of the original 
 	@ stack pointer we can put more things on the stack.
+  @ Put R4 onto the stack so that we can use it as a scratch variable.
 	push { r4, lr }
 		
-	mov r4, r0 @ We'll over-write R0, so stash it in r4.
+	mov  r4, r0
 	
-	ldr  r1, [r0,#24]	@ Get the stacked PC
-	subs r1, #2
-	ldrb r1, [r1, #0]	@ Extract the svc call number
-	lsls r1, r1, #2         @ Make this back into a table offset.
+	ldr  r1, [r0,#24] @ Get the stacked PC
+	subs r1, #2       @ Address of svc call instruction. 
+	ldrb r1, [r1, #0] @ Extract the svc call number
+	lsls r1, r1, #2   @ Make this back into a table offset.
 
 
 	@ Range Checking goes here.
 	@ That is, assuming that you don't trust yourself...
 	
-	ldr  r2,=syscall_table 
-	add  r2, r2, r1    @ Table lookup
-	ldr  r2, [r2, #0]  @ Get the address of the function
-	mov  r12, r2       @ We'll be loading up R0-R3 in a moment.			
+	ldr  r2,  =syscall_table 
+	add  r2,  r2, r1    @ Table lookup
+	ldr  r2,  [r2, #0]  @ Get the address of the function
+	mov  r12, r2        @ We'll be loading up R0-R3 in a moment.			
 
 	ldr r0, [ r4,  #0 ] @ Unroll LDM.
 	ldr r1, [ r4,  #4 ]
