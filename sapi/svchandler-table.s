@@ -1,9 +1,9 @@
 @ SVC Call Table.
 @
-@ Copyright (C) 2016-2017, Robert Sexton.  All rights reserved.
+@ Copyright (C) 2016-2021, Robert Sexton.  All rights reserved.
 @ Covered by the terms of the supplied License.txt file
 @ 
-@ This is a reference copy.  It may need to be customized, depending
+@ This is a reference copy.  It will need to be customized, depending
 @ on how much of the SAPI API is implemented.
 
 
@@ -29,13 +29,13 @@
 @ Minor Release / Feature Change
 @ Patchlevel 
 __SAPI_00_ABIVersion:
-	ldr r0,  =0x00030000
-	bx lr  
+  ldr r0,  =0x00030000
+  bx lr  
 
 @ Hang out and wait for debugger help.
 .thumb_func
 __SAPI_RFU:
-	b __SAPI_RFU
+  b __SAPI_RFU
 
 // ------------------------------------------------------------
 // The first 16 are whats required for bootstrapping forth.
@@ -100,7 +100,7 @@ syscall_table:
 	@ but require a higher level of integration.
 	@ --------------------------------------------------
 
-	@ ------------------ Enhanced -----------------	
+	@ ------------------ Enhanced IO -----------------	
 	@ Put a block of characters.  TYPE.
 	@ R0 - Stream #
 	@ R1 - Number of Characters
@@ -113,7 +113,7 @@ syscall_table:
 	.word	__SAPI_05_PutString     @ SVC 5/type	 
 	.extern	__SAPI_05_PutString     @ SVC 5
 
-	@ ------------------ Enhanced -----------------	
+  @ ------------------ Enhanced IO -----------------	
 	@ Send a newline or whatever corresponds to it.
 	@ R0 - Stream #
 	@ R1 - The address of the caller's tcb if blocking is requested, or zero.
@@ -124,7 +124,7 @@ syscall_table:
 	.word	__SAPI_06_EOL			@ SVC 6/cr	 
 	.extern	__SAPI_06_EOL
 
-  @ ------------------ Core -----------------
+  @ ------------------ Enhanced IO -----------------	
 	@ Non-blocking output 
 	@ R0 - Stream #
   @ R1 - Character 
@@ -140,7 +140,7 @@ syscall_table:
 	.word	__SAPI_RFU @ 10
 	.word	__SAPI_RFU @ 11
 
-	@ ------------------ Enhanced -----------------	
+  @ ------------------ Enhanced IO -----------------	
 	@ A mechanism so that a user task can request a 
 	@ wake in response to a specific event.  This is an
 	@ Implementation specific thing.  Types 0-15 are reserved
@@ -161,6 +161,7 @@ syscall_table:
 	@ clock-gated by WFI, with an ISR that measures the ticks
 	@ of the timer per wall clock unit of time.  
   @ This trick requires a device with automatic clock gating.
+  @ Some Cortex-M devices also have CYCCNT in the Debug block.
 	@
 	@ No arguments.
 	@ Returns a platform-specific measure of CPU utilization.
@@ -187,81 +188,6 @@ syscall_table:
 @ --------------------------------------------------
 @ End of reserved vectors.
 @ --------------------------------------------------
-
-@ When running on a system that uses supervisor/thread
-@ Separation, there are a few things that need to be system 
-@ Calls
-
-@ Implies user+supervisor mode
-#if (SAPI_MPU)
-	@ Request upgrade to supervisor mode.
-	.word	__SAPI_16_GetPrivs		 
-	.extern	__SAPI_16_GetPrivs		 
-
-	@ A hook so the scheduler can install selected MPU slots.
-	.word	__SAPI_17_MPULoad		  
-	.extern	__SAPI_17_MPULoad		 
-
-	@ This one may require privileges
-	.word	__SAPI_18_HWReset 
-	.extern __SAPI_18_HWReset 
-
-	@ Depending on the security model, 
-	@ This may be better off as a system call
-	@ rather than direct manipulation of registers.
-	.word	__SAPI_19_LaunchUserApp 
-	.extern __SAPI_19_LaunchUserApp 
-	
-#else
-	.word	__SAPI_RFU @ 16
-	.word	__SAPI_RFU @ 17
-	.word	__SAPI_RFU @ 18
-	.word	__SAPI_RFU @ 19
-#endif
-
-
-#if (SAPI_LWIP) 
-	.word __SAPI_20_GetIP
-	.extern __SAPI_20_GetIP
-
-	.word __SAPI_21_PBuf_Ram_Alloc
-	.extern __SAPI_21_PBuf_Ram_Alloc
-
-	.word __SAPI_22_PBuf_Free
-	.extern __SAPI_22_PBuf_Free
-
-	.word __SAPI_23_DNS_GetHostByName
-	.extern __SAPI_23_DNS_GetHostByName
-
-	.word __SAPI_24_UDP_GetPCB
-	.extern __SAPI_24_UDP_GetPCB
-
-	.word __SAPI_25_UDP_Connect
-	.extern __SAPI_25_UDP_Connect
-
-	.word __SAPI_26_UDP_Recv
-	.extern __SAPI_26_UDP_Recv
-
-	.word __SAPI_27_UDP_Send
-	.extern __SAPI_27_UDP_Send	
-#else
-	.word	__SAPI_RFU @ 20
-	.word	__SAPI_RFU @ 21
-	.word	__SAPI_RFU @ 22
-	.word	__SAPI_RFU @ 23
-	.word	__SAPI_RFU @ 24
-	.word	__SAPI_RFU @ 25
-	.word	__SAPI_RFU @ 26
-	.word	__SAPI_RFU @ 27
-#endif
-
-.word	__SAPI_RFU @ 28
-.word	__SAPI_RFU @ 29
-.word	__SAPI_RFU @ 30
-.word	__SAPI_RFU @ 31
-
-
-
 
 syscall_table_end:
 
