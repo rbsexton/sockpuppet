@@ -83,7 +83,7 @@ SVC_Handler:
   ldr   r2,  =syscall_table 
   ldr   r12, [r2, r1, LSL #2]
 
-  ldm   r4, { r0-r3 }
+  ldm   r4, { r0-r3 } @ Not ldmia
   blx   r12
   stm   r4, { r0-r1 } @ Support 64-bit return values.
   pop   { r4, pc }

@@ -61,8 +61,8 @@
 @
 @ Squeezing more cycles out of this routine is a fun exercise, but there 
 @ are limits - AAPCS requires that the code save LR, and the code needs 
-@ access to the stack frame after the fucntion call, so you're committed 
-@ to two register pushes, minimumm.
+@ access to the stack frame after the function call, so you're committed 
+@ to two register pushes, minimum.
 
 SVC_Handler:
 
@@ -87,9 +87,10 @@ done:
   
   mov  r4, r0
 
+
   ldr  r1, [r0,#24] @ Get the stacked PC
   subs r1, #2       @ Address of svc call instruction. 
-  ldrb r1, [r1, #0] @ Extract the svc call number
+  ldrb r1, [r1, #0] @ Extract the svc call number. M0 doesn't have neg offsets.
   lsls r1, r1, #2   @ Make this back into a table offset.
 
 
