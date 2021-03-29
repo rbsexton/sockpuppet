@@ -1,9 +1,7 @@
 @ SVC Call trampoline.
-@ All system calls have to take args from the 
-@ Stack, so this code figures out which stack,
-@ and passes it along to the routine as r0
-@ We're now in supervisor mode, so r0-r4 are 
-@ free for us to use as we see fit.
+@
+@ See the m0 trampoline for a detailed discussion of 
+@ register usage and why this code works the way it does
 @
 @ This is the core definition of whats basically a binary ABI
 @ So this is as good a place as any to define it.
@@ -17,8 +15,8 @@
 @ because system calls are not allowed to block - the client
 @ application must provide that functionality.
 @
-@ Copyright (C) 2016-2017, Robert Sexton.  All rights reserved.
-@ Covered by the terms of the supplied Licence.txt file
+@ Copyright (C) 2016-2021, Robert Sexton.  All rights reserved.
+@ Covered by the terms of the supplied License.txt file
 
 
 @ Version History
@@ -52,21 +50,12 @@ __SAPI_RFU:
 .thumb_func     @  Make sure the linker puts it in the table.
 .global SVC_Handler
 
-@ Incorporate register marshalling.   Thats a little wasteful
-@ since all system calls don't need it, but it makes the code 
-@ cleaner at the system call and it saves a little code at the 
-@ function level.
-@
-@ It might appear on first inspection that you don't have to pull
-@ the registers from the stack.   Thats true in most conditions.
-@ Its very not true in one case:  Tail-chaining by the NVIC.  If the 
-@ SVC handler tail-chains after another exception running at the same 
-@ pre-emption priority level, R0-R3 & R12 will no longer be valid.
-@ the only safe place to get the pushed registers under all circumstances
-@ is the stack.   
+@ See the comments from the m0 trampoline.   The code 
+@ is functionally identical.
 SVC_Handler:
 
   @ bkpt #0
+
 
   tst   lr,#0x4 @ Figure out which stack
   ite   eq
