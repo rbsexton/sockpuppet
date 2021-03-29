@@ -61,8 +61,8 @@
 @
 @ Squeezing more cycles out of this routine is a fun exercise, but there 
 @ are limits - AAPCS requires that the code save LR, and the code needs 
-@ access to the stack frame after the fucntion call, so you're committed 
-@ to two register pushes, minimumm.
+@ access to the stack frame after the function call, so you're committed 
+@ to two register pushes, minimum.
 
 SVC_Handler:
 
