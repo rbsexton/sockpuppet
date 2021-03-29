@@ -66,38 +66,38 @@ __SAPI_RFU:
 @ is the stack.   
 SVC_Handler:
 
-	@ bkpt #0
+  @ bkpt #0
 
-	tst	lr,#0x4		@ Figure out which stack
-	ite	eq
-	mrseq	r0,msp		@ Main stack
-	mrsne	r0,psp		@ Process/Thread Stack
+  tst   lr,#0x4 @ Figure out which stack
+  ite   eq
+  mrseq r0, msp @ Main stack
+  mrsne r0, psp @ Process/Thread Stack
 
-	@ Now that we have a copy of the original 
-	@ stack pointer we can put more things on the stack.
-	push { r4, lr }
-	
-	@ This is where you could make a copy of the stack frame pointer
-	@ for system calls that need to access it - things like panic,
-	@ reboot, etc that will pull the stacked PC, and so on.
-	@ ldr r1, =saved_frame_p
-	@ str r0, [ r1 ]
-	
-	mov r4, r0 @ We'll over-write R0, so stash it in r4.
-	
-	ldr  r1, [r0,#24]	@ Get the stacked PC
-	ldrb r1, [r1,#-2]	@ Extract the svc call number
+  @ Now that we have a copy of the original 
+  @ stack pointer we can put more things on the stack.
+  push { r4, lr }
 
-	@ Range Checking goes here.
-	@ That is, assuming that you don't trust yourself...
-	
-	ldr  r2,=syscall_table 
-	ldr  r12, [r2, r1, LSL #2]
+  @ This is where you could make a copy of the stack frame pointer
+  @ for system calls that need to access it - things like panic,
+  @ reboot, etc that will pull the stacked PC, and so on.
+  @ ldr r1, =saved_frame_p
+  @ str r0, [ r1 ]
 
-	ldm r4, { r0-r3 }
-	blx r12
-	stm r4, { r0-r1 } @ Support 64-bit return values.
-	pop { r4, pc }
+  mov r4, r0 @ We'll over-write R0, so stash it in r4.
+
+  ldr   r1,  [r0,#24] @ Get the stacked PC
+  ldrb  r1,  [r1,#-2] @ Extract the svc call number
+
+  @ Range Checking goes here.
+  @ That is, assuming that you don't trust yourself...
+
+  ldr   r2,  =syscall_table 
+  ldr   r12, [r2, r1, LSL #2]
+
+  ldm   r4, { r0-r3 }
+  blx   r12
+  stm   r4, { r0-r1 } @ Support 64-bit return values.
+  pop   { r4, pc }
 
 .end
 
